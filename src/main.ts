@@ -1,0 +1,38 @@
+import 'dotenv/config'
+import { NestFactory, Reflector } from '@nestjs/core'
+import { AppModule } from './app.module'
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common'
+import { HttpExceptionFilter } from './utils/filters/http-exception.filter'
+import validationOptions from './utils/validations-options'
+import { ResolvePromisesInterceptor } from './utils/serializer.interceptor'
+import { useContainer } from 'class-validator'
+import { ConfigService } from '@nestjs/config'
+import { AllConfigType } from './config/config.type'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule, { cors: true })
+  useContainer(app.select(AppModule), { fallbackOnErrors: true })
+  const configService = app.get(ConfigService<AllConfigType>)
+
+  app.enableShutdownHooks()
+  app.setGlobalPrefix(configService.getOrThrow('app.apiPrefix', { infer: true }), {
+    exclude: ['/'],
+  })
+  app.useGlobalPipes(new ValidationPipe(validationOptions))
+  app.useGlobalFilters(new HttpExceptionFilter())
+  app.useGlobalInterceptors(
+    // ResolvePromisesInterceptor is used to resolve promises in responses because class-transformer can't do it
+    // https://github.com/typestack/class-transformer/issues/549
+    new ResolvePromisesInterceptor(),
+    new ClassSerializerInterceptor(app.get(Reflector))
+  )
+
+  const options = new DocumentBuilder().setTitle('API').setDescription('API docs').setVersion('1.0').addBearerAuth().build()
+
+  const document = SwaggerModule.createDocument(app, options)
+  SwaggerModule.setup('docs', app, document)
+
+  await app.listen(process.env.PORT ?? 3000)
+}
+bootstrap()
