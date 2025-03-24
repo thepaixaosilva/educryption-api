@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt'
 import { Model } from 'mongoose'
 import { RoleEnum } from '../../../roles/roles.enum'
 import { StatusEnum } from '../../../statuses/statuses.enum'
-import { User } from '../../../users/entities/user.entity'
+import { User } from '../../../users/schemas/user.schema'
 
 @Injectable()
 export class UserSeedService {
@@ -23,10 +23,9 @@ export class UserSeedService {
       const password = await bcrypt.hash('secret', salt)
 
       const data = new this.model({
-        email: 'miki@domain.com',
+        email: 'admin@domain.com',
         password: password,
-        firstName: 'Super',
-        lastName: 'Admin',
+        fullName: 'Admin',
         role: {
           _id: RoleEnum.admin.toString(),
         },
@@ -46,10 +45,9 @@ export class UserSeedService {
       const password = await bcrypt.hash('secret', salt)
 
       const data = new this.model({
-        email: 'lie@domain.com',
+        email: 'user@domain.com',
         password: password,
-        firstName: 'Lie',
-        lastName: 'the Liar',
+        fullName: 'User',
         role: {
           _id: RoleEnum.user.toString(),
         },

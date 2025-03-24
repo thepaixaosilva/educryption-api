@@ -30,12 +30,7 @@ export default [{
         parser: tsParser,
         ecmaVersion: 5,
         sourceType: "module",
-
-        parserOptions: {
-            project: "tsconfig.json",
-            tsconfigRootDir: "/home/thepaixaosilva/Repositories/project-mikilie",
-        },
-    },
+   },
 
     rules: {
         "@typescript-eslint/interface-name-prefix": "off",

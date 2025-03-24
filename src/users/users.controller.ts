@@ -1,18 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, SerializeOptions, HttpCode, HttpStatus, UseGuards } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, SerializeOptions, HttpCode, HttpStatus } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger'
 import { Roles } from '../roles/roles.decorator'
 import { RoleEnum } from '../roles/roles.enum'
-import { User } from './entities/user.entity'
-import { NullableType } from '../utils/types/nullable-type'
-import { RolesGuard } from 'src/roles/roles.guard'
-import { AuthGuard } from 'src/auth/auth.guard'
+import { User } from './schemas/user.schema'
+// import { RolesGuard } from 'src/roles/roles.guard'
+// import { AuthGuard } from 'src/auth/auth.guard'
 
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
-@UseGuards(AuthGuard, RolesGuard)
+// @UseGuards(AuthGuard, RolesGuard)
 @ApiTags('Users')
 @Controller({
   path: 'users',
@@ -29,8 +28,13 @@ export class UsersController {
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createProfileDto: CreateUserDto): Promise<User> {
+  create(@Body() createProfileDto: CreateUserDto): Promise<Omit<User, 'password'>> {
     return this.usersService.create(createProfileDto)
+  }
+
+  @Get()
+  async findAll() {
+    return this.usersService.findAll() // Chama o método findAll para retornar todos os usuários sem a senha
   }
 
   @ApiOkResponse({
@@ -46,7 +50,7 @@ export class UsersController {
     type: String,
     required: true,
   })
-  findOne(@Param('id') id: string): Promise<NullableType<User>> {
+  findOne(@Param('id') id: string): Promise<User> {
     return this.usersService.findById(id)
   }
 
@@ -63,7 +67,7 @@ export class UsersController {
     type: String,
     required: true,
   })
-  update(@Param('id') id: string, @Body() updateProfileDto: UpdateUserDto): Promise<User | null> {
+  update(@Param('id') id: string, @Body() updateProfileDto: UpdateUserDto): Promise<Omit<User, 'password'>> {
     return this.usersService.update(id, updateProfileDto)
   }
 
@@ -75,6 +79,6 @@ export class UsersController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string): Promise<void> {
-    return this.usersService.remove(id)
+    return this.usersService.delete(id)
   }
 }

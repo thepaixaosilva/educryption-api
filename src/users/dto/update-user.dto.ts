@@ -2,11 +2,17 @@ import { PartialType } from '@nestjs/mapped-types'
 import { CreateUserDto } from './create-user.dto'
 import { IsEmail, IsOptional, IsString, IsStrongPassword, Matches } from 'class-validator'
 import { Type } from 'class-transformer'
-import { RoleDto } from 'src/roles/dto/role.dto'
-import { StatusDto } from 'src/statuses/dto/status.dto'
+import { RoleDto } from '../../roles/dto/role.dto'
+import { StatusDto } from '../../statuses/dto/status.dto'
 import { ApiPropertyOptional } from '@nestjs/swagger'
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
+  @ApiPropertyOptional({ description: '', example: '' })
+  @IsString()
+  @IsOptional()
+  @Matches(/^[A-Za-zÀ-ÿ\s]*$/, { message: 'The name should only contain letters.' })
+  fullName?: string
+
   @ApiPropertyOptional({ description: '', example: '' })
   @IsString()
   @IsOptional()
@@ -18,18 +24,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @IsEmail({}, { message: 'Invalid e-mail.' })
   email?: string
-
-  @ApiPropertyOptional({ description: '', example: '' })
-  @IsString()
-  @IsOptional()
-  @Matches(/^[A-Za-zÀ-ÿ\s]*$/, { message: 'The name should only contain letters.' })
-  firstName?: string
-
-  @ApiPropertyOptional({ description: '', example: '' })
-  @IsString()
-  @IsOptional()
-  @Matches(/^[A-Za-zÀ-ÿ\s]*$/, { message: 'The name should only contain letters.' })
-  lastName?: string
 
   @ApiPropertyOptional({ description: '', example: '' })
   @IsOptional()

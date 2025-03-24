@@ -8,6 +8,10 @@ import { ConfigModule } from '@nestjs/config'
 import databaseConfig from './database/config/database.config'
 import { LoggerMiddleware } from './utils/middlewares/logger.middleware'
 import { AuthModule } from './auth/auth.module'
+import { UnitsModule } from './units/units.module'
+import { ActivitiesModule } from './activities/activities.module'
+import { ContentsModule } from './contents/contents.module'
+import { CommentsModule } from './comments/comments.module'
 import appConfig from './config/app.config'
 
 @Module({
@@ -20,6 +24,10 @@ import appConfig from './config/app.config'
     MongooseModule.forRootAsync({ useClass: MongooseConfigService }),
     UsersModule,
     AuthModule,
+    UnitsModule,
+    ActivitiesModule,
+    ContentsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

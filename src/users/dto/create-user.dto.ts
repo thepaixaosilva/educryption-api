@@ -8,6 +8,12 @@ export class CreateUserDto {
   @ApiProperty({ description: '', example: '' })
   @IsString()
   @IsNotEmpty()
+  @Matches(/^[A-Za-zÀ-ÿ\s]*$/, { message: 'The name should only contain letters.' })
+  fullName: string
+
+  @ApiProperty({ description: '', example: '' })
+  @IsString()
+  @IsNotEmpty()
   @IsStrongPassword({ minLength: 8, minNumbers: 1, minLowercase: 1, minUppercase: 1, minSymbols: 1 }, { message: 'Weak Password' })
   password: string
 
@@ -15,18 +21,6 @@ export class CreateUserDto {
   @IsString()
   @IsEmail({}, { message: 'Invalid e-mail.' })
   email: string
-
-  @ApiProperty({ description: '', example: '' })
-  @IsString()
-  @IsNotEmpty()
-  @Matches(/^[A-Za-zÀ-ÿ\s]*$/, { message: 'The name should only contain letters.' })
-  firstName: string
-
-  @ApiProperty({ description: '', example: '' })
-  @IsString()
-  @IsNotEmpty()
-  @Matches(/^[A-Za-zÀ-ÿ\s]*$/, { message: 'The name should only contain letters.' })
-  lastName: string
 
   @ApiProperty({ description: '', example: '' })
   @Type(() => RoleDto)
