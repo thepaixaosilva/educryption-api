@@ -6,20 +6,21 @@ import {
   Delete,
   Body,
   Param,
-  // UseGuards,
   UploadedFile,
   UseInterceptors,
   Query,
+  HttpCode,
+  HttpStatus,
+  SerializeOptions,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
-// import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-// import { RolesGuard } from '../auth/roles.guard';
-// import { Roles } from '../auth/roles.decorator';
 import { ContentsService } from './contents.service'
 import { CreateContentDto } from './dto/create-content.dto'
 import { UpdateContentDto } from './dto/update-content.dto'
 import { diskStorage } from 'multer'
 import { extname } from 'path'
+import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger'
+import { Content } from './schemas/content.schema'
 
 @Controller('contents')
 export class ContentsController {
@@ -42,7 +43,24 @@ export class ContentsController {
       }),
     })
   )
-  async create(@Body() createContentDto: CreateContentDto, @UploadedFile() file) {
+  @ApiOperation({
+    summary: 'Create new content',
+    description: 'Creates a new content with the provided data.',
+  })
+  @ApiBody({
+    type: CreateContentDto,
+    description: 'Content data transfer object',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Content created successfully',
+    type: Content,
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'Data failed validation',
+  })
+  async create(@Body() createContentDto: CreateContentDto, @UploadedFile() file): Promise<Content> {
     if (file) {
       createContentDto.file = `uploads/contents/${file.filename}`
     }
@@ -51,7 +69,21 @@ export class ContentsController {
 
   // @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Query('unitId') unitId?: string) {
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get all contents',
+    description: "Retrieves a list of all contents with their details.",
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all contents retrieved successfully',
+    type: [Content],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No content found',
+  })
+  findAll(@Query('unitId') unitId?: string): Promise<Content[]> {
     if (unitId) {
       return this.contentsService.findByUnit(unitId)
     }
@@ -60,7 +92,33 @@ export class ContentsController {
 
   // @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  @ApiOkResponse({
+    type: Content,
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get content by ID',
+    description: "Retrieves a specific content by its ID.",
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Content ID',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Content found',
+    type: Content,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Content not found',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid content ID',
+  })
+  findOne(@Param('id') id: string): Promise<Content> {
     return this.contentsService.findById(id)
   }
 
@@ -81,7 +139,39 @@ export class ContentsController {
       }),
     })
   )
-  async update(@Param('id') id: string, @Body() updateContentDto: UpdateContentDto, @UploadedFile() file) {
+  @ApiOkResponse({
+    type: Content,
+  })
+  @SerializeOptions({
+    groups: ['admin'],
+  })
+  @ApiOperation({
+    summary: 'Update content',
+    description: "Updates a content's information by its ID.",
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Content ID to update',
+    type: String,
+  })
+  @ApiBody({
+    type: UpdateContentDto,
+    description: 'Updated content data',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Content updated successfully',
+    type: Content,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid content ID',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Content not found',
+  })
+  async update(@Param('id') id: string, @Body() updateContentDto: UpdateContentDto, @UploadedFile() file): Promise<Content> {
     if (file) {
       updateContentDto.file = `uploads/contents/${file.filename}`
     }
@@ -91,13 +181,58 @@ export class ContentsController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   // @Roles('admin', 'teacher')
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'Content ID to delete',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Remove content',
+    description: "Removes a content from the system by its ID.",
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'Content removed successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid content ID',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Content not found',
+  })
+  remove(@Param('id') id: string): Promise<void> {
     return this.contentsService.remove(id)
   }
 
   // @UseGuards(JwtAuthGuard)
   @Post(':id/comments/:commentId')
-  addComment(@Param('id') id: string, @Param('commentId') commentId: string) {
+  @ApiOperation({
+    summary: 'Add comment to content',
+    description: 'Adds a comment to a specific content.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'Content ID to add comment to',
+  })
+  @ApiParam({
+    name: 'commentId',
+    type: String,
+    description: 'Comment ID to be added',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Comment added successfully',
+    type: Content,
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'Data failed validation',
+  })
+  addComment(@Param('id') id: string, @Param('commentId') commentId: string): Promise<Content> {
     return this.contentsService.addComment(id, commentId)
   }
 }

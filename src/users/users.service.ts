@@ -34,7 +34,7 @@ export class UsersService {
     const user = await this.usersModel.findOne({ email })
     if (user && user.id !== excludeUserId) {
       throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        status: HttpStatus.CONFLICT,
         errors: {
           email: 'emailAlreadyExists',
         },
