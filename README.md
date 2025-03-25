@@ -1,16 +1,16 @@
 <h1 align="center" style="font-weight: bold;">A Ser Definido</h1>
 
 <div align="center">
-    <a>
+    <a href='https://nestjs.com/'>
 		  <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white"/>
     </a>
-    <a>
+    <a href='https://mongoosejs.com/'>
 		  <img src="https://img.shields.io/badge/Mongoose-FE0803?style=for-the-badge&logo=mongoose&logoColor=white"/>
     </a>
-	  <a>
+	  <a href='https://www.typescriptlang.org/'>
 		  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white"/>
     </a>
-    <a>
+    <a href='https://www.mongodb.com/'>
 	  	<img src="https://img.shields.io/badge/MongoDB-003B57?style=for-the-badge&logo=mongodb&logoColor=white"/>
     </a>
 </div>
@@ -39,7 +39,7 @@ Neste repositório encontra-se a aplicação back-end que é utilizada no projet
       </a>
     </td>
     <td align="center">
-      <a href="https://github.com/matsilva03">
+      <a href="https://github.com/thepaixaosilva">
         <img src="https://avatars.githubusercontent.com/u/72952802?v=4" width="100px;" alt="Matheus Silva's Profile Picture"/><br>
         <sub>
             <b>Matheus Silva</b>
@@ -70,5 +70,4 @@ Neste repositório encontra-se a aplicação back-end que é utilizada no projet
 - [Convenções de commit](https://www.conventionalcommits.org/pt-br/v1.0.0/)
 - [Documentação do NestJS](https://docs.nestjs.com/)
 - [Documentação do TypeScript](https://www.typescriptlang.org/docs/)
-- [Documentação do TypeORM](https://typeorm.io/)
-
+- [Documentação do Mongoose](https://mongoosejs.com/docs/guide.html)
