@@ -14,7 +14,7 @@ services:
     build: .
     ports:
       - ${APP_PORT}:${APP_PORT}
-    command: sh -c "./wait-for-it.sh mongodb:${DATABASE_PORT} -- npm run seed:prod; npm run start:prod"
+    command: sh -c "./wait-for-it.sh mongodb:${DATABASE_PORT} -- npm run seed:prod && npm run start:prod"
     env_file:
       - .env
     depends_on:

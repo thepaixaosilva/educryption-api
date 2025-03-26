@@ -10,8 +10,6 @@ COPY . .
 
 COPY wait-for-it.sh ./
 
-COPY startup.sh ./
-
 RUN if [ ! -f .env ]; then cp .env.example .env; fi
 
 RUN npm run build
@@ -30,9 +28,6 @@ COPY --from=build /app/.env ./
 
 COPY wait-for-it.sh ./
 RUN chmod +x wait-for-it.sh
-
-COPY startup.sh ./
-RUN chmod +x startup.sh
 
 EXPOSE ${APP_PORT} ${DATABASE_PORT}
 

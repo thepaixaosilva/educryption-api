@@ -15,7 +15,7 @@ export class UserSeedService {
 
   async run() {
     const admin = await this.model.findOne({
-      email: 'miki@domain.com',
+      email: 'admin@domain.com',
     })
 
     if (!admin) {
@@ -37,7 +37,7 @@ export class UserSeedService {
     }
 
     const user = await this.model.findOne({
-      email: 'lie@domain.com',
+      email: 'user@domain.com',
     })
 
     if (!user) {
