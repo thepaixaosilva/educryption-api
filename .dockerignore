@@ -1,0 +1,9 @@
+# Ignored these files and directories at any application level
+**/README.md
+**/.dockerignore
+**/Dockerfile
+**/docker-compose.yml
+**/.git/
+**/dist/
+**/node_modules/
+
