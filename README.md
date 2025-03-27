@@ -1,4 +1,4 @@
-<h1 align="center" style="font-weight: bold;">A Ser Definido</h1>
+<h1 align="center" style="font-weight: bold;">EduCryption</h1>
 
 <div align="center">
     <a href='https://nestjs.com/'>
@@ -22,9 +22,11 @@
 
 <h2 id="about">📌 Sobre</h2>
 
-Este projeto faz parte do Projeto Integrador do 5° semestre do curso de Análise e Desenvolvimento de Sistemas da Fatec Indaiatuba. Seu nome ainda será definido. No entanto, é certo de que se tratará de uma aplicação mobile para auxiliar, através da gamificação, na prática de conceitos de Segurança da Informação, atuando como suporte para a disciplina de mesmo nome.
+Este projeto faz parte do Projeto Integrador do 5° semestre do curso de Análise e Desenvolvimento de Sistemas da Fatec Indaiatuba. O EduCryption trata-se de uma aplicação mobile para auxiliar, através da gamificação, na prática de conceitos de Segurança da Informação, atuando como suporte para a disciplina de mesmo nome.
 
 Neste repositório encontra-se a aplicação back-end que é utilizada no projeto.
+
+A aplicação mobile pode ser encontrada [aqui](https://github.com/thepaixaosilva/educryption).
 
 <h2 id="colab">🤝 Contribuidores</h2>
 
