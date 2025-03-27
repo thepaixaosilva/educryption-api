@@ -96,7 +96,7 @@ export class UsersService {
   }
 
   async findAll(): Promise<Omit<User, 'password'>[]> {
-    const users = await this.usersModel.find().exec()
+    const users = await this.usersModel.find().select('-password').exec()
 
     if (users.length === 0) {
       throw new NotFoundException({
