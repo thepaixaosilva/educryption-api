@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ApiProperty, ApiTags } from '@nestjs/swagger'
 import mongoose, { HydratedDocument } from 'mongoose'
-import { Activity } from 'src/activities/schemas/activity.schema'
-import { Content } from 'src/contents/schemas/content.schema'
+import { Activity } from '../../activities/schemas/activity.schema'
+import { Content } from '../../contents/schemas/content.schema'
 
 export type UnitDocument = HydratedDocument<Unit>
 

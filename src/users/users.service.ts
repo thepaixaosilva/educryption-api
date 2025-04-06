@@ -9,8 +9,8 @@ import { RoleSchema } from '../roles/entities/role.entity'
 import { RoleEnum } from '../roles/roles.enum'
 import { StatusSchema } from '../statuses/entities/status.entity'
 import { StatusEnum } from '../statuses/statuses.enum'
-import { Activity } from 'src/activities/schemas/activity.schema'
-import { SubmitActivityDto } from 'src/activities/dto/submit-activity.dto'
+import { Activity } from '../activities/schemas/activity.schema'
+import { SubmitActivityDto } from '../activities/dto/submit-activity.dto'
 
 @Injectable()
 export class UsersService {

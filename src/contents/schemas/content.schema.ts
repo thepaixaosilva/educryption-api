@@ -33,8 +33,7 @@ export class Content {
     required: false,
   })
   @Prop()
-  file: string;
-  
+  file: string
 
   @ApiProperty({
     type: String,

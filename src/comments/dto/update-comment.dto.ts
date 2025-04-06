@@ -6,7 +6,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger'
 export class UpdateCommentDto extends PartialType(CreateCommentDto) {
   @ApiPropertyOptional({
     description: 'The text of the comment',
-    example: 'I did not understand the content. Can someone break it down for me, please?'
+    example: 'I did not understand the content. Can someone break it down for me, please?',
   })
   @IsString()
   @IsOptional()

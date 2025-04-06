@@ -52,7 +52,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         statusCode: status,
         message,
         errors,
-        requestId, // para tracking
+        requestId, // for tracking
         timestamp: new Date().toISOString(),
       })
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -4,7 +4,7 @@ import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 export class CreateCommentDto {
   @ApiProperty({
     description: 'The text of the comment',
-    example: 'I did not understand the content. Can someone break it down for me, please?'
+    example: 'I did not understand the content. Can someone break it down for me, please?',
   })
   @IsString()
   @IsNotEmpty()
@@ -17,7 +17,7 @@ export class CreateCommentDto {
 
   @ApiPropertyOptional({
     description: 'ID of the correspondent content',
-    example: '60d21b4667d0d8992e610c85'
+    example: '60d21b4667d0d8992e610c85',
   })
   @IsMongoId()
   @IsOptional()
@@ -25,7 +25,7 @@ export class CreateCommentDto {
 
   @ApiPropertyOptional({
     description: 'ID of the correspondent comment',
-    example: '60d21b4667d0d8992e610c85'
+    example: '60d21b4667d0d8992e610c85',
   })
   @IsMongoId()
   @IsOptional()
