@@ -1,28 +1,57 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, SerializeOptions, UseGuards } from '@nestjs/common'
 import { AuthService } from './auth.service'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import { AuthLoginDto } from './dto/auth-login.dto'
+import { LoginResponseDto } from './dto/login-response.dto'
+import { RefreshResponseDto } from './dto/refresh-response.dto'
+import { User } from '../users/schemas/user.schema'
+import { NullableType } from '../utils/types/nullable-type'
+import { JwtRefreshAuthGuard } from './guards/refresh-jwt-auth.guard'
+import { JwtAuthGuard } from './guards/jwt-auth.guard'
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @SerializeOptions({
+    groups: ['me'],
+  })
   @Post('login')
+  @ApiOkResponse({
+    type: LoginResponseDto,
+  })
   @HttpCode(HttpStatus.OK)
-  async login(@Body() body: { email: string; password: string }) {
-    if (!body.email || !body.password) {
-      return { message: 'Inform your credentials to log-in' }
-    }
+  public login(@Body() loginDto: AuthLoginDto): Promise<LoginResponseDto> {
+    return this.authService.validateLogin(loginDto)
+  }
 
-    const user = await this.authService.validateUser(body.email, body.password)
+  @ApiBearerAuth()
+  @SerializeOptions({
+    groups: ['me'],
+  })
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({
+    type: User,
+  })
+  @HttpCode(HttpStatus.OK)
+  public me(@Request() request): Promise<NullableType<User>> {
+    return this.authService.me(request.user)
+  }
 
-    if (user) {
-      return this.authService.login({
-        email: user.email,
-        id: user._id,
-      })
-    }
-
-    return { message: 'Invalid credentials' }
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    type: RefreshResponseDto,
+  })
+  @SerializeOptions({
+    groups: ['me'],
+  })
+  @Post('refresh')
+  @UseGuards(JwtRefreshAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  public refresh(@Request() req): Promise<RefreshResponseDto> {
+    const payload = req.user
+    return this.authService.refreshToken(payload)
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, SerializeOptions, HttpCode, HttpStatus, Put } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete, SerializeOptions, HttpCode, HttpStatus, Put, UseGuards } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -6,17 +6,13 @@ import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation
 import { Roles } from '../roles/roles.decorator'
 import { RoleEnum } from '../roles/roles.enum'
 import { User } from './schemas/user.schema'
-// import { RolesGuard } from 'src/roles/roles.guard'
-// import { AuthGuard } from 'src/auth/auth.guard'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
-// @UseGuards(AuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard)
 @ApiTags('Users')
-@Controller({
-  path: 'users',
-  version: '1',
-})
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

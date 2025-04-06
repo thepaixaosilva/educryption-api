@@ -1,32 +1,19 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  HttpCode,
-  HttpStatus,
-  SerializeOptions,
-  // UseGuards
-} from '@nestjs/common'
-// import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-// import { RolesGuard } from '../auth/roles.guard';
-// import { Roles } from '../auth/roles.decorator';
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus, SerializeOptions, UseGuards } from '@nestjs/common'
 import { ActivitiesService } from './activities.service'
 import { CreateActivityDto } from './dto/create-activity.dto'
 import { UpdateActivityDto } from './dto/update-activity.dto'
 import { SubmitActivityDto } from './dto/submit-activity.dto'
 import { Activity } from './schemas/activity.schema'
-import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@ApiTags('Activiities')
 @Controller('activities')
 export class ActivitiesController {
-  constructor(private readonly activitiesService: ActivitiesService) { }
+  constructor(private readonly activitiesService: ActivitiesService) {}
 
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin', 'teacher')
   @Post()
   @ApiOperation({
     summary: 'Create new activity',
@@ -53,7 +40,7 @@ export class ActivitiesController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all activities',
-    description: "Retrieves a list of all activities with their details.",
+    description: 'Retrieves a list of all activities with their details.',
   })
   @ApiResponse({
     status: 200,
@@ -75,7 +62,7 @@ export class ActivitiesController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get activity by ID',
-    description: "Retrieves a specific activity by its ID.",
+    description: 'Retrieves a specific activity by its ID.',
   })
   @ApiParam({
     name: 'id',
@@ -130,8 +117,6 @@ export class ActivitiesController {
     return this.activitiesService.findByUnit(unitId)
   }
 
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin', 'teacher')
   @Put(':id')
   @ApiOkResponse({
     type: Activity,
@@ -169,8 +154,6 @@ export class ActivitiesController {
     return this.activitiesService.update(id, updateActivityDto)
   }
 
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin', 'teacher')
   @Delete(':id')
   @ApiParam({
     name: 'id',
@@ -180,7 +163,7 @@ export class ActivitiesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Remove activity',
-    description: "Removes an activity from the system by its ID.",
+    description: 'Removes an activity from the system by its ID.',
   })
   @ApiResponse({
     status: 204,
@@ -198,7 +181,6 @@ export class ActivitiesController {
     return this.activitiesService.delete(id)
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Post(':id/submit')
   @ApiOperation({
     summary: 'Submit activity',

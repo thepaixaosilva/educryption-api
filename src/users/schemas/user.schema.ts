@@ -66,6 +66,11 @@ export class UserUnit {
 export class User {
   @ApiProperty({
     type: String,
+  })
+  id: string
+
+  @ApiProperty({
+    type: String,
     example: 'user@domain.com',
     description: 'User e-mail',
     uniqueItems: true,

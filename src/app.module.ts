@@ -13,12 +13,13 @@ import { ActivitiesModule } from './activities/activities.module'
 import { ContentsModule } from './contents/contents.module'
 import { CommentsModule } from './comments/comments.module'
 import appConfig from './config/app.config'
+import authConfig from './auth/config/auth.config'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig],
+      load: [appConfig, databaseConfig, authConfig],
       envFilePath: ['.env'],
     }),
     MongooseModule.forRootAsync({ useClass: MongooseConfigService }),

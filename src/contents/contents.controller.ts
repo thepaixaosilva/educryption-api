@@ -1,33 +1,21 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  UploadedFile,
-  UseInterceptors,
-  Query,
-  HttpCode,
-  HttpStatus,
-  SerializeOptions,
-} from '@nestjs/common'
+import { Controller, Get, Post, Put, Delete, Body, Param, UploadedFile, UseInterceptors, Query, HttpCode, HttpStatus, SerializeOptions, UseGuards } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ContentsService } from './contents.service'
 import { CreateContentDto } from './dto/create-content.dto'
 import { UpdateContentDto } from './dto/update-content.dto'
 import { diskStorage } from 'multer'
 import { extname } from 'path'
-import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Content } from './schemas/content.schema'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@ApiTags('Contents')
 @Controller('contents')
 export class ContentsController {
   constructor(private readonly contentsService: ContentsService) {}
 
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin', 'teacher')
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
@@ -67,12 +55,11 @@ export class ContentsController {
     return this.contentsService.create(createContentDto)
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all contents',
-    description: "Retrieves a list of all contents with their details.",
+    description: 'Retrieves a list of all contents with their details.',
   })
   @ApiResponse({
     status: 200,
@@ -90,7 +77,6 @@ export class ContentsController {
     return this.contentsService.findAll()
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiOkResponse({
     type: Content,
@@ -98,7 +84,7 @@ export class ContentsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get content by ID',
-    description: "Retrieves a specific content by its ID.",
+    description: 'Retrieves a specific content by its ID.',
   })
   @ApiParam({
     name: 'id',
@@ -122,8 +108,6 @@ export class ContentsController {
     return this.contentsService.findById(id)
   }
 
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin', 'teacher')
   @Put(':id')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -178,8 +162,6 @@ export class ContentsController {
     return this.contentsService.update(id, updateContentDto)
   }
 
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin', 'teacher')
   @Delete(':id')
   @ApiParam({
     name: 'id',
@@ -189,7 +171,7 @@ export class ContentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Remove content',
-    description: "Removes a content from the system by its ID.",
+    description: 'Removes a content from the system by its ID.',
   })
   @ApiResponse({
     status: 204,
@@ -207,7 +189,6 @@ export class ContentsController {
     return this.contentsService.remove(id)
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Post(':id/comments/:commentId')
   @ApiOperation({
     summary: 'Add comment to content',

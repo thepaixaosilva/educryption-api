@@ -1,28 +1,18 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  HttpCode,
-  HttpStatus,
-  SerializeOptions,
-  // UseGuards
-} from '@nestjs/common'
-// import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus, SerializeOptions, UseGuards } from '@nestjs/common'
 import { CommentsService } from './comments.service'
 import { CreateCommentDto } from './dto/create-comment.dto'
 import { UpdateCommentDto } from './dto/update-comment.dto'
 import { Comment } from './schemas/comment.schema'
-import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@ApiTags('Comments')
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
-  // @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({
     summary: 'Create new comment',
@@ -49,7 +39,7 @@ export class CommentsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all comments',
-    description: "Retrieves a list of all comments with their details.",
+    description: 'Retrieves a list of all comments with their details.',
   })
   @ApiResponse({
     status: 200,
@@ -71,7 +61,7 @@ export class CommentsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get comment by ID',
-    description: "Retrieves a specific comment by its ID.",
+    description: 'Retrieves a specific comment by its ID.',
   })
   @ApiParam({
     name: 'id',
@@ -102,7 +92,7 @@ export class CommentsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get comments by content ID',
-    description: "Retrieves all comments associated with a specific content ID.",
+    description: 'Retrieves all comments associated with a specific content ID.',
   })
   @ApiParam({
     name: 'contentId',
@@ -133,7 +123,7 @@ export class CommentsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get comments by user ID',
-    description: "Retrieves all comments made by a specific user.",
+    description: 'Retrieves all comments made by a specific user.',
   })
   @ApiParam({
     name: 'userId',
@@ -164,7 +154,7 @@ export class CommentsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get replies to a comment',
-    description: "Retrieves all replies to a specific comment by its ID.",
+    description: 'Retrieves all replies to a specific comment by its ID.',
   })
   @ApiParam({
     name: 'id',
@@ -188,7 +178,6 @@ export class CommentsController {
     return this.commentsService.findReplies(id)
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Put(':id')
   @ApiOkResponse({
     type: Comment,
@@ -226,7 +215,6 @@ export class CommentsController {
     return this.commentsService.update(id, updateCommentDto)
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @ApiParam({
     name: 'id',
@@ -236,7 +224,7 @@ export class CommentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Remove comment',
-    description: "Removes a comment from the system by its ID.",
+    description: 'Removes a comment from the system by its ID.',
   })
   @ApiResponse({
     status: 204,
