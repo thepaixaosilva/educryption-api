@@ -1,9 +1,9 @@
-import { BadRequestException, HttpStatus, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common'
+import { HttpStatus, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { InjectModel } from '@nestjs/mongoose'
 import { User, UserActivity } from './schemas/user.schema'
-import mongoose, { Model } from 'mongoose'
+import { Model } from 'mongoose'
 import * as bcrypt from 'bcrypt'
 import { RoleSchema } from '../roles/entities/role.entity'
 import { RoleEnum } from '../roles/roles.enum'
@@ -11,24 +11,14 @@ import { StatusSchema } from '../statuses/entities/status.entity'
 import { StatusEnum } from '../statuses/statuses.enum'
 import { Activity } from '../activities/schemas/activity.schema'
 import { SubmitActivityDto } from '../activities/dto/submit-activity.dto'
+import { Validators } from 'src/utils/helpers/validators.helper'
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private readonly usersModel: Model<User>
-  ) {}
-
-  private async validateId(id: string, type: string): Promise<void> {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException({
-        status: HttpStatus.BAD_REQUEST,
-        errors: {
-          status: `invalid${type}Id`,
-        },
-      })
-    }
-  }
+  ) { }
 
   private async checkEmailExistence(email: string, excludeUserId?: string): Promise<void> {
     const user = await this.usersModel.findOne({ email })
@@ -112,7 +102,7 @@ export class UsersService {
   }
 
   async findById(id: string): Promise<User> {
-    await this.validateId(id, 'User')
+    Validators.validateId(id, 'User')
     const user = await this.usersModel.findOne({ _id: id }).select('-password').lean()
 
     if (!user) {
@@ -128,7 +118,7 @@ export class UsersService {
   }
 
   async findByIds(ids: string[]): Promise<User[]> {
-    ids.forEach((id) => this.validateId(id, 'User'))
+    ids.forEach((id) => Validators.validateId(id, 'User'))
 
     const users = await this.usersModel
       .find({ _id: { $in: ids } })
@@ -163,7 +153,7 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<Omit<User, 'password'>> {
-    await this.validateId(id, 'User')
+    Validators.validateId(id, 'User')
 
     if (updateUserDto.email) await this.checkEmailExistence(updateUserDto.email, id)
 
@@ -219,7 +209,7 @@ export class UsersService {
   }
 
   async delete(id: string): Promise<void> {
-    await this.validateId(id, 'User')
+    Validators.validateId(id, 'User')
 
     const deletedUser = await this.usersModel.findOneAndDelete({ _id: id })
 

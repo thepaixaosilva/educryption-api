@@ -1,28 +1,18 @@
-import { BadRequestException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import mongoose, { Model } from 'mongoose'
+import { Model } from 'mongoose'
 import { Content, ContentDocument } from './schemas/content.schema'
 import { CreateContentDto } from './dto/create-content.dto'
 import { UpdateContentDto } from './dto/update-content.dto'
 import { UnitsService } from '../units/units.service'
+import { Validators } from 'src/utils/helpers/validators.helper'
 
 @Injectable()
 export class ContentsService {
   constructor(
     @InjectModel(Content.name) private contentModel: Model<ContentDocument>,
     private unitsService: UnitsService
-  ) {}
-
-  private async validateId(id: string, type: string): Promise<void> {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException({
-        status: HttpStatus.BAD_REQUEST,
-        errors: {
-          status: `invalid${type}Id`,
-        },
-      })
-    }
-  }
+  ) { }
 
   async create(createContentDto: CreateContentDto): Promise<Content> {
     const unit = await this.unitsService.findById(createContentDto.unit_id)
@@ -59,7 +49,7 @@ export class ContentsService {
   }
 
   async findById(id: string): Promise<Content> {
-    await this.validateId(id, 'Content')
+    Validators.validateId(id, 'Content')
     const content = await this.contentModel.findById(id).exec()
     if (!content) {
       throw new NotFoundException({
@@ -73,12 +63,12 @@ export class ContentsService {
   }
 
   async findByUnit(unitId: string): Promise<Content[]> {
-    await this.validateId(unitId, 'Unit')
+    Validators.validateId(unitId, 'Unit')
     return this.contentModel.find({ unit_id: unitId }).exec()
   }
 
   async update(id: string, updateContentDto: UpdateContentDto): Promise<Content> {
-    await this.validateId(id, 'Content')
+    Validators.validateId(id, 'Content')
     if (updateContentDto.unit_id) {
       const unit = await this.unitsService.findById(updateContentDto.unit_id)
       if (!unit) {
@@ -106,7 +96,7 @@ export class ContentsService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.validateId(id, 'Content')
+    Validators.validateId(id, 'Content')
     const deletedContent = await this.contentModel.findByIdAndDelete(id).exec()
     if (!deletedContent) {
       throw new NotFoundException({
@@ -119,8 +109,8 @@ export class ContentsService {
   }
 
   async addComment(contentId: string, commentId: string): Promise<Content> {
-    await this.validateId(contentId, 'Content')
-    await this.validateId(commentId, 'Comment')
+    Validators.validateId(contentId, 'Content')
+    Validators.validateId(commentId, 'Comment')
     const content = await this.contentModel.findByIdAndUpdate(contentId, { $push: { comments: commentId } }, { new: true }).exec()
 
     if (!content) {

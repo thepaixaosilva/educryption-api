@@ -1,23 +1,13 @@
-import { BadRequestException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import mongoose, { Model } from 'mongoose'
+import { Model } from 'mongoose'
 import { Unit, UnitDocument } from './schemas/unit.schema'
 import { CreateUnitDto } from './dto/create-unit.dto'
+import { Validators } from 'src/utils/helpers/validators.helper'
 
 @Injectable()
 export class UnitsService {
-  constructor(@InjectModel(Unit.name) private unitModel: Model<UnitDocument>) {}
-
-  private async validateId(id: string, type: string): Promise<void> {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException({
-        status: HttpStatus.BAD_REQUEST,
-        errors: {
-          status: `invalid${type}Id`,
-        },
-      })
-    }
-  }
+  constructor(@InjectModel(Unit.name) private unitModel: Model<UnitDocument>) { }
 
   private async findUnitById(id: string): Promise<Unit> {
     const unit = await this.unitModel.findById(id).exec()
@@ -51,13 +41,13 @@ export class UnitsService {
   }
 
   async findById(id: string): Promise<Unit> {
-    await this.validateId(id, 'Unit')
+    Validators.validateId(id, 'Unit')
     return this.findUnitById(id)
   }
 
   private async addReferenceToUnit(unitId: string, referenceId: string, field: string): Promise<Unit> {
-    await this.validateId(unitId, 'Unit')
-    await this.validateId(referenceId, field.charAt(0).toUpperCase() + field.slice(1))
+    Validators.validateId(unitId, 'Unit')
+    Validators.validateId(referenceId, field.charAt(0).toUpperCase() + field.slice(1))
 
     const unit = await this.unitModel.findByIdAndUpdate(unitId, { $push: { [field]: referenceId } }, { new: true }).exec()
 
