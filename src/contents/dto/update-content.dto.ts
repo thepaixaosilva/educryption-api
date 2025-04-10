@@ -1,7 +1,7 @@
-import { IsString, IsOptional, IsMongoId } from 'class-validator'
-import { CreateContentDto } from './create-content.dto'
-import { PartialType } from '@nestjs/mapped-types'
-import { ApiPropertyOptional } from '@nestjs/swagger'
+import { IsString, IsOptional, IsMongoId } from 'class-validator';
+import { CreateContentDto } from './create-content.dto';
+import { PartialType } from '@nestjs/mapped-types';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateContentDto extends PartialType(CreateContentDto) {
   @ApiPropertyOptional({
@@ -10,7 +10,7 @@ export class UpdateContentDto extends PartialType(CreateContentDto) {
   })
   @IsString()
   @IsOptional()
-  title?: string
+  title?: string;
 
   @ApiPropertyOptional({
     description: 'File URI that corresponds to the file path for the content',
@@ -18,7 +18,7 @@ export class UpdateContentDto extends PartialType(CreateContentDto) {
   })
   @IsString()
   @IsOptional()
-  file?: string
+  file?: string;
 
   @ApiPropertyOptional({
     description: 'ID of correspondent unit',
@@ -26,5 +26,5 @@ export class UpdateContentDto extends PartialType(CreateContentDto) {
   })
   @IsMongoId()
   @IsOptional()
-  unit_id?: string
+  unit_id?: string;
 }

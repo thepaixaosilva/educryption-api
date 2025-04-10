@@ -1,9 +1,27 @@
-import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus, UseGuards } from '@nestjs/common'
-import { UnitsService } from './units.service'
-import { CreateUnitDto } from './dto/create-unit.dto'
-import { Unit } from './schemas/unit.schema'
-import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
+import { UnitsService } from './units.service';
+import { CreateUnitDto } from './dto/create-unit.dto';
+import { Unit } from './schemas/unit.schema';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -35,7 +53,7 @@ export class UnitsController {
     description: 'Data failed validation',
   })
   create(@Body() createUnitDto: CreateUnitDto): Promise<Unit> {
-    return this.unitsService.create(createUnitDto)
+    return this.unitsService.create(createUnitDto);
   }
 
   @Get()
@@ -54,7 +72,7 @@ export class UnitsController {
     description: 'No units found',
   })
   findAll(): Promise<Unit[]> {
-    return this.unitsService.findAll()
+    return this.unitsService.findAll();
   }
 
   @Get(':id')
@@ -85,7 +103,7 @@ export class UnitsController {
     description: 'Invalid unit ID',
   })
   findOne(@Param('id') id: string): Promise<Unit> {
-    return this.unitsService.findById(id)
+    return this.unitsService.findById(id);
   }
 
   @Post(':id/activities/:activityId')
@@ -95,7 +113,8 @@ export class UnitsController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Add an activity to the unit',
-    description: 'Adds an activity to the unit by associating the activity ID to the unit.',
+    description:
+      'Adds an activity to the unit by associating the activity ID to the unit.',
   })
   @ApiParam({
     name: 'id',
@@ -116,8 +135,11 @@ export class UnitsController {
     status: 422,
     description: 'Data failed validation',
   })
-  addActivity(@Param('id') id: string, @Param('activityId') activityId: string): Promise<Unit> {
-    return this.unitsService.addActivity(id, activityId)
+  addActivity(
+    @Param('id') id: string,
+    @Param('activityId') activityId: string,
+  ): Promise<Unit> {
+    return this.unitsService.addActivity(id, activityId);
   }
 
   @Post(':id/contents/:contentId')
@@ -127,7 +149,8 @@ export class UnitsController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Add content to the unit',
-    description: 'Adds a content to the unit by associating the content ID to the unit.',
+    description:
+      'Adds a content to the unit by associating the content ID to the unit.',
   })
   @ApiParam({
     name: 'id',
@@ -148,7 +171,10 @@ export class UnitsController {
     status: 422,
     description: 'Data failed validation',
   })
-  addContent(@Param('id') id: string, @Param('contentId') contentId: string): Promise<Unit> {
-    return this.unitsService.addContent(id, contentId)
+  addContent(
+    @Param('id') id: string,
+    @Param('contentId') contentId: string,
+  ): Promise<Unit> {
+    return this.unitsService.addContent(id, contentId);
   }
 }

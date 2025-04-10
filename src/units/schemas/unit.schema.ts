@@ -1,10 +1,10 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { ApiProperty, ApiTags } from '@nestjs/swagger'
-import mongoose, { HydratedDocument } from 'mongoose'
-import { Activity } from '../../activities/schemas/activity.schema'
-import { Content } from '../../contents/schemas/content.schema'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { Activity } from '../../activities/schemas/activity.schema';
+import { Content } from '../../contents/schemas/content.schema';
 
-export type UnitDocument = HydratedDocument<Unit>
+export type UnitDocument = HydratedDocument<Unit>;
 
 @ApiTags('Units')
 @Schema({
@@ -24,7 +24,7 @@ export class Unit {
     required: true,
   })
   @Prop()
-  title: string
+  title: string;
 
   @ApiProperty({
     type: [String],
@@ -33,7 +33,7 @@ export class Unit {
     required: false,
   })
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Activity' }])
-  activities: Activity[]
+  activities: Activity[];
 
   @ApiProperty({
     type: [String],
@@ -42,7 +42,7 @@ export class Unit {
     required: false,
   })
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Content' }])
-  contents: Content[]
+  contents: Content[];
 }
 
-export const UnitSchema = SchemaFactory.createForClass(Unit)
+export const UnitSchema = SchemaFactory.createForClass(Unit);

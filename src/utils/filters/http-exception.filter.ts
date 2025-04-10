@@ -1,41 +1,48 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common'
-import { randomUUID } from 'crypto'
-import { Response } from 'express'
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
+import { randomUUID } from 'crypto';
+import { Response } from 'express';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger('HttpExceptionFilter')
+  private readonly logger = new Logger('HttpExceptionFilter');
 
   catch(exception: unknown, host: ArgumentsHost) {
-    const ctx = host.switchToHttp()
-    const response = ctx.getResponse<Response>()
-    const request = ctx.getRequest()
-    const isProduction = process.env.NODE_ENV === 'production'
-    const requestId = randomUUID()
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest();
+    const isProduction = process.env.NODE_ENV === 'production';
+    const requestId = randomUUID();
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR
-    let message = 'An error occurred'
-    let errors: Array<{ field: string; message: string }> = []
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'An error occurred';
+    let errors: Array<{ field: string; message: string }> = [];
 
     try {
       if (exception instanceof HttpException) {
-        status = exception.getStatus()
-        const exceptionResponse = exception.getResponse() as any
+        status = exception.getStatus();
+        const exceptionResponse = exception.getResponse() as any;
 
         if (isProduction) {
           if (status === HttpStatus.CONFLICT) {
-            message = 'Validation error'
+            message = 'Validation error';
             errors =
               exceptionResponse.violations?.map((v: any) => ({
                 field: v.field,
                 message: 'Invalid value',
-              })) || []
+              })) || [];
           } else {
-            message = 'An error occurred'
+            message = 'An error occurred';
           }
         } else {
-          message = exceptionResponse.message
-          errors = exceptionResponse.violations || []
+          message = exceptionResponse.message;
+          errors = exceptionResponse.violations || [];
         }
       }
 
@@ -46,7 +53,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         method: request.method,
         userId: request.user?.id,
         requestId,
-      })
+      });
 
       response.status(status).json({
         statusCode: status,
@@ -54,7 +61,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         errors,
         requestId, // for tracking
         timestamp: new Date().toISOString(),
-      })
+      });
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       // Failsafe - never expose internal errors
@@ -62,7 +69,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         statusCode: 500,
         message: 'Internal server error',
         requestId,
-      })
+      });
     }
   }
 }

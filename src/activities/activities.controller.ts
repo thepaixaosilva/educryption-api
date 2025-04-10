@@ -1,11 +1,31 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus, SerializeOptions, UseGuards } from '@nestjs/common'
-import { ActivitiesService } from './activities.service'
-import { CreateActivityDto } from './dto/create-activity.dto'
-import { UpdateActivityDto } from './dto/update-activity.dto'
-import { SubmitActivityDto } from './dto/submit-activity.dto'
-import { Activity } from './schemas/activity.schema'
-import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+  SerializeOptions,
+  UseGuards,
+} from '@nestjs/common';
+import { ActivitiesService } from './activities.service';
+import { CreateActivityDto } from './dto/create-activity.dto';
+import { UpdateActivityDto } from './dto/update-activity.dto';
+import { SubmitActivityDto } from './dto/submit-activity.dto';
+import { Activity } from './schemas/activity.schema';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -33,7 +53,7 @@ export class ActivitiesController {
     description: 'Data failed validation',
   })
   create(@Body() createActivityDto: CreateActivityDto): Promise<Activity> {
-    return this.activitiesService.create(createActivityDto)
+    return this.activitiesService.create(createActivityDto);
   }
 
   @Get()
@@ -52,7 +72,7 @@ export class ActivitiesController {
     description: 'No activities found',
   })
   findAll(): Promise<Activity[]> {
-    return this.activitiesService.findAll()
+    return this.activitiesService.findAll();
   }
 
   @Get(':id')
@@ -83,7 +103,7 @@ export class ActivitiesController {
     description: 'Invalid activity ID',
   })
   findOne(@Param('id') id: string): Promise<Activity> {
-    return this.activitiesService.findById(id)
+    return this.activitiesService.findById(id);
   }
 
   @Get('unit/:unitId')
@@ -93,7 +113,8 @@ export class ActivitiesController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get activities by unit ID',
-    description: 'Retrieves a list of activities associated with a specific unit by its ID.',
+    description:
+      'Retrieves a list of activities associated with a specific unit by its ID.',
   })
   @ApiParam({
     name: 'unitId',
@@ -114,7 +135,7 @@ export class ActivitiesController {
     description: 'Invalid unit ID',
   })
   findByUnit(@Param('unitId') unitId: string): Promise<Activity[]> {
-    return this.activitiesService.findByUnit(unitId)
+    return this.activitiesService.findByUnit(unitId);
   }
 
   @Put(':id')
@@ -150,8 +171,11 @@ export class ActivitiesController {
     status: 404,
     description: 'Activity not found',
   })
-  update(@Param('id') id: string, @Body() updateActivityDto: UpdateActivityDto): Promise<Activity> {
-    return this.activitiesService.update(id, updateActivityDto)
+  update(
+    @Param('id') id: string,
+    @Body() updateActivityDto: UpdateActivityDto,
+  ): Promise<Activity> {
+    return this.activitiesService.update(id, updateActivityDto);
   }
 
   @Delete(':id')
@@ -178,7 +202,7 @@ export class ActivitiesController {
     description: 'Activity not found',
   })
   remove(@Param('id') id: string): Promise<void> {
-    return this.activitiesService.delete(id)
+    return this.activitiesService.delete(id);
   }
 
   @Post(':id/submit')
@@ -212,7 +236,10 @@ export class ActivitiesController {
     status: 422,
     description: 'Data failed validation',
   })
-  submit(@Param('id') id: string, @Body() submitActivityDto: SubmitActivityDto): Promise<{ activityId: string; userId: string; status: string }> {
-    return this.activitiesService.submitActivity(id, submitActivityDto)
+  submit(
+    @Param('id') id: string,
+    @Body() submitActivityDto: SubmitActivityDto,
+  ): Promise<{ activityId: string; userId: string; status: string }> {
+    return this.activitiesService.submitActivity(id, submitActivityDto);
   }
 }

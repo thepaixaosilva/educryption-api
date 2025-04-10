@@ -1,123 +1,125 @@
-import { BadRequestException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import mongoose, { Model } from 'mongoose'
-import { Activity, ActivityDocument } from './schemas/activity.schema'
-import { CreateActivityDto } from './dto/create-activity.dto'
-import { UpdateActivityDto } from './dto/update-activity.dto'
-import { UsersService } from '../users/users.service'
-import { SubmitActivityDto } from './dto/submit-activity.dto'
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Activity, ActivityDocument } from './schemas/activity.schema';
+import { CreateActivityDto } from './dto/create-activity.dto';
+import { UpdateActivityDto } from './dto/update-activity.dto';
+import { UsersService } from '../users/users.service';
+import { SubmitActivityDto } from './dto/submit-activity.dto';
+import { Validators } from 'src/utils/helpers/validators.helper';
 
 @Injectable()
 export class ActivitiesService {
   constructor(
     @InjectModel(Activity.name)
     private activityModel: Model<ActivityDocument>,
-    private usersService: UsersService
+    private usersService: UsersService,
   ) {}
 
-  private async validateId(id: string, type: string): Promise<void> {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException({
-        status: HttpStatus.BAD_REQUEST,
-        errors: {
-          status: `invalid${type}Id`,
-        },
-      })
-    }
-  }
-
   private async findActivityById(id: string): Promise<Activity> {
-    const activity = await this.activityModel.findById(id).exec()
+    const activity = await this.activityModel.findById(id).exec();
     if (!activity) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         errors: {
           status: 'activityNotFound',
         },
-      })
+      });
     }
-    return activity
+    return activity;
   }
 
   private async findActivitiesByUnit(unitId: string): Promise<Activity[]> {
-    const activities = await this.activityModel.find({ unit_id: unitId }).exec()
+    const activities = await this.activityModel
+      .find({ unit_id: unitId })
+      .exec();
     if (activities.length === 0) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         errors: {
           status: 'noActivitiesFoundForUnit',
         },
-      })
+      });
     }
-    return activities
+    return activities;
   }
 
   async create(createActivityDto: CreateActivityDto): Promise<Activity> {
-    const createdActivity = new this.activityModel(createActivityDto)
-    return createdActivity.save()
+    const createdActivity = new this.activityModel(createActivityDto);
+    return createdActivity.save();
   }
 
   async findAll(): Promise<Activity[]> {
-    const activities = await this.activityModel.find().exec()
+    const activities = await this.activityModel.find().exec();
     if (activities.length === 0) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         errors: {
           status: 'noActivityFound',
         },
-      })
+      });
     }
-    return activities
+    return activities;
   }
 
   async findById(id: string): Promise<Activity> {
-    await this.validateId(id, 'Activity')
-    return this.findActivityById(id)
+    Validators.validateId(id, 'Activity');
+    return this.findActivityById(id);
   }
 
   async findByUnit(unitId: string): Promise<Activity[]> {
-    await this.validateId(unitId, 'Unit')
-    return this.findActivitiesByUnit(unitId)
+    Validators.validateId(unitId, 'Unit');
+    return this.findActivitiesByUnit(unitId);
   }
 
-  async update(id: string, updateActivityDto: UpdateActivityDto): Promise<Activity> {
-    await this.validateId(id, 'Activity')
-    const updatedActivity = await this.activityModel.findByIdAndUpdate(id, updateActivityDto, { new: true }).exec()
+  async update(
+    id: string,
+    updateActivityDto: UpdateActivityDto,
+  ): Promise<Activity> {
+    Validators.validateId(id, 'Activity');
+    const updatedActivity = await this.activityModel
+      .findByIdAndUpdate(id, updateActivityDto, { new: true })
+      .exec();
     if (!updatedActivity) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         errors: {
           status: 'activityNotFound',
         },
-      })
+      });
     }
-    return updatedActivity
+    return updatedActivity;
   }
 
   async delete(id: string): Promise<void> {
-    await this.validateId(id, 'Activity')
-    const deletedActivity = await this.activityModel.findByIdAndDelete(id).exec()
+    Validators.validateId(id, 'Activity');
+    const deletedActivity = await this.activityModel
+      .findByIdAndDelete(id)
+      .exec();
     if (!deletedActivity) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         errors: {
           status: 'activityNotFound',
         },
-      })
+      });
     }
   }
 
-  async submitActivity(id: string, submitActivityDto: SubmitActivityDto): Promise<{ activityId: string; userId: string; status: string }> {
-    await this.validateId(id, 'Activity')
-    await this.validateId(submitActivityDto.user_id, 'User')
+  async submitActivity(
+    id: string,
+    submitActivityDto: SubmitActivityDto,
+  ): Promise<{ activityId: string; userId: string; status: string }> {
+    Validators.validateId(id, 'Activity');
+    Validators.validateId(submitActivityDto.user_id, 'User');
 
-    const activity = await this.findActivityById(id)
-    await this.usersService.completeActivity(submitActivityDto, activity)
+    const activity = await this.findActivityById(id);
+    await this.usersService.completeActivity(submitActivityDto, activity);
 
     return {
       activityId: id,
       userId: submitActivityDto.user_id,
       status: 'completed',
-    }
+    };
   }
 }

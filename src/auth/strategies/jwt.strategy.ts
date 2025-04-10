@@ -1,9 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { PassportStrategy } from '@nestjs/passport'
-import { ExtractJwt, Strategy } from 'passport-jwt'
-import { AllConfigType } from '../../config/config.type'
-import { OrNeverType } from '../../utils/types/or-never-type'
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { AllConfigType } from '../../config/config.type';
+import { OrNeverType } from '../../utils/types/or-never-type';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -11,14 +11,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: configService.getOrThrow('auth.secret', { infer: true }),
-    })
+    });
   }
 
   public validate(payload: any): OrNeverType<any> {
     if (!payload.id) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException();
     }
 
-    return payload
+    return payload;
   }
 }

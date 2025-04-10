@@ -1,13 +1,36 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UploadedFile, UseInterceptors, Query, HttpCode, HttpStatus, SerializeOptions, UseGuards } from '@nestjs/common'
-import { FileInterceptor } from '@nestjs/platform-express'
-import { ContentsService } from './contents.service'
-import { CreateContentDto } from './dto/create-content.dto'
-import { UpdateContentDto } from './dto/update-content.dto'
-import { diskStorage } from 'multer'
-import { extname } from 'path'
-import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Content } from './schemas/content.schema'
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UploadedFile,
+  UseInterceptors,
+  Query,
+  HttpCode,
+  HttpStatus,
+  SerializeOptions,
+  UseGuards,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ContentsService } from './contents.service';
+import { CreateContentDto } from './dto/create-content.dto';
+import { UpdateContentDto } from './dto/update-content.dto';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Content } from './schemas/content.schema';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -25,11 +48,11 @@ export class ContentsController {
           const randomName = Array(32)
             .fill(null)
             .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('')
-          return cb(null, `${randomName}${extname(file.originalname)}`)
+            .join('');
+          return cb(null, `${randomName}${extname(file.originalname)}`);
         },
       }),
-    })
+    }),
   )
   @ApiOperation({
     summary: 'Create new content',
@@ -48,11 +71,14 @@ export class ContentsController {
     status: 422,
     description: 'Data failed validation',
   })
-  async create(@Body() createContentDto: CreateContentDto, @UploadedFile() file): Promise<Content> {
+  async create(
+    @Body() createContentDto: CreateContentDto,
+    @UploadedFile() file,
+  ): Promise<Content> {
     if (file) {
-      createContentDto.file = `uploads/contents/${file.filename}`
+      createContentDto.file = `uploads/contents/${file.filename}`;
     }
-    return this.contentsService.create(createContentDto)
+    return this.contentsService.create(createContentDto);
   }
 
   @Get()
@@ -72,9 +98,9 @@ export class ContentsController {
   })
   findAll(@Query('unitId') unitId?: string): Promise<Content[]> {
     if (unitId) {
-      return this.contentsService.findByUnit(unitId)
+      return this.contentsService.findByUnit(unitId);
     }
-    return this.contentsService.findAll()
+    return this.contentsService.findAll();
   }
 
   @Get(':id')
@@ -105,7 +131,7 @@ export class ContentsController {
     description: 'Invalid content ID',
   })
   findOne(@Param('id') id: string): Promise<Content> {
-    return this.contentsService.findById(id)
+    return this.contentsService.findById(id);
   }
 
   @Put(':id')
@@ -117,11 +143,11 @@ export class ContentsController {
           const randomName = Array(32)
             .fill(null)
             .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('')
-          return cb(null, `${randomName}${extname(file.originalname)}`)
+            .join('');
+          return cb(null, `${randomName}${extname(file.originalname)}`);
         },
       }),
-    })
+    }),
   )
   @ApiOkResponse({
     type: Content,
@@ -155,11 +181,15 @@ export class ContentsController {
     status: 404,
     description: 'Content not found',
   })
-  async update(@Param('id') id: string, @Body() updateContentDto: UpdateContentDto, @UploadedFile() file): Promise<Content> {
+  async update(
+    @Param('id') id: string,
+    @Body() updateContentDto: UpdateContentDto,
+    @UploadedFile() file,
+  ): Promise<Content> {
     if (file) {
-      updateContentDto.file = `uploads/contents/${file.filename}`
+      updateContentDto.file = `uploads/contents/${file.filename}`;
     }
-    return this.contentsService.update(id, updateContentDto)
+    return this.contentsService.update(id, updateContentDto);
   }
 
   @Delete(':id')
@@ -186,7 +216,7 @@ export class ContentsController {
     description: 'Content not found',
   })
   remove(@Param('id') id: string): Promise<void> {
-    return this.contentsService.remove(id)
+    return this.contentsService.remove(id);
   }
 
   @Post(':id/comments/:commentId')
@@ -213,7 +243,10 @@ export class ContentsController {
     status: 422,
     description: 'Data failed validation',
   })
-  addComment(@Param('id') id: string, @Param('commentId') commentId: string): Promise<Content> {
-    return this.contentsService.addComment(id, commentId)
+  addComment(
+    @Param('id') id: string,
+    @Param('commentId') commentId: string,
+  ): Promise<Content> {
+    return this.contentsService.addComment(id, commentId);
   }
 }

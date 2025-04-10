@@ -1,10 +1,30 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode, HttpStatus, SerializeOptions, UseGuards } from '@nestjs/common'
-import { CommentsService } from './comments.service'
-import { CreateCommentDto } from './dto/create-comment.dto'
-import { UpdateCommentDto } from './dto/update-comment.dto'
-import { Comment } from './schemas/comment.schema'
-import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+  SerializeOptions,
+  UseGuards,
+} from '@nestjs/common';
+import { CommentsService } from './comments.service';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdateCommentDto } from './dto/update-comment.dto';
+import { Comment } from './schemas/comment.schema';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -32,7 +52,7 @@ export class CommentsController {
     description: 'Data failed validation',
   })
   create(@Body() createCommentDto: CreateCommentDto): Promise<Comment> {
-    return this.commentsService.create(createCommentDto)
+    return this.commentsService.create(createCommentDto);
   }
 
   @Get()
@@ -51,7 +71,7 @@ export class CommentsController {
     description: 'No comment found',
   })
   findAll(): Promise<Comment[]> {
-    return this.commentsService.findAll()
+    return this.commentsService.findAll();
   }
 
   @Get(':id')
@@ -82,7 +102,7 @@ export class CommentsController {
     description: 'Invalid comment ID',
   })
   findOne(@Param('id') id: string): Promise<Comment> {
-    return this.commentsService.findById(id)
+    return this.commentsService.findById(id);
   }
 
   @Get('content/:contentId')
@@ -92,7 +112,8 @@ export class CommentsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get comments by content ID',
-    description: 'Retrieves all comments associated with a specific content ID.',
+    description:
+      'Retrieves all comments associated with a specific content ID.',
   })
   @ApiParam({
     name: 'contentId',
@@ -113,7 +134,7 @@ export class CommentsController {
     description: 'Invalid content ID',
   })
   findByContent(@Param('contentId') contentId: string): Promise<Comment[]> {
-    return this.commentsService.findByContent(contentId)
+    return this.commentsService.findByContent(contentId);
   }
 
   @Get('user/:userId')
@@ -144,7 +165,7 @@ export class CommentsController {
     description: 'Invalid user ID',
   })
   findByUser(@Param('userId') userId: string): Promise<Comment[]> {
-    return this.commentsService.findByUser(userId)
+    return this.commentsService.findByUser(userId);
   }
 
   @Get(':id/replies')
@@ -175,7 +196,7 @@ export class CommentsController {
     description: 'Invalid comment ID',
   })
   findReplies(@Param('id') id: string): Promise<Comment[]> {
-    return this.commentsService.findReplies(id)
+    return this.commentsService.findReplies(id);
   }
 
   @Put(':id')
@@ -211,8 +232,11 @@ export class CommentsController {
     status: 404,
     description: 'Comment not found',
   })
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto): Promise<Comment> {
-    return this.commentsService.update(id, updateCommentDto)
+  update(
+    @Param('id') id: string,
+    @Body() updateCommentDto: UpdateCommentDto,
+  ): Promise<Comment> {
+    return this.commentsService.update(id, updateCommentDto);
   }
 
   @Delete(':id')
@@ -239,6 +263,6 @@ export class CommentsController {
     description: 'Comment not found',
   })
   remove(@Param('id') id: string): Promise<void> {
-    return this.commentsService.delete(id)
+    return this.commentsService.delete(id);
   }
 }

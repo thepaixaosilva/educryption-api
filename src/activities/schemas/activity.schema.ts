@@ -1,9 +1,9 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import mongoose, { HydratedDocument } from 'mongoose'
-import { Unit } from '../../units/schemas/unit.schema'
-import { ApiProperty, ApiTags } from '@nestjs/swagger'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { Unit } from '../../units/schemas/unit.schema';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
-export type ActivityDocument = HydratedDocument<Activity>
+export type ActivityDocument = HydratedDocument<Activity>;
 
 @ApiTags('Activities')
 @Schema({
@@ -23,7 +23,7 @@ export class Activity {
     required: true,
   })
   @Prop()
-  title: string
+  title: string;
 
   @ApiProperty({
     type: String,
@@ -32,7 +32,7 @@ export class Activity {
     required: true,
   })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Unit' })
-  unit_id: Unit
+  unit_id: Unit;
 }
 
-export const ActivitySchema = SchemaFactory.createForClass(Activity)
+export const ActivitySchema = SchemaFactory.createForClass(Activity);

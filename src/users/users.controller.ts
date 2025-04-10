@@ -1,12 +1,33 @@
-import { Controller, Get, Post, Body, Param, Delete, SerializeOptions, HttpCode, HttpStatus, Put, UseGuards } from '@nestjs/common'
-import { UsersService } from './users.service'
-import { CreateUserDto } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
-import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Roles } from '../roles/roles.decorator'
-import { RoleEnum } from '../roles/roles.enum'
-import { User } from './schemas/user.schema'
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  SerializeOptions,
+  HttpCode,
+  HttpStatus,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Roles } from '../roles/roles.decorator';
+import { RoleEnum } from '../roles/roles.enum';
+import { User } from './schemas/user.schema';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
@@ -45,8 +66,10 @@ export class UsersController {
     status: 422,
     description: 'Data failed validation',
   })
-  create(@Body() createProfileDto: CreateUserDto): Promise<Omit<User, 'password'>> {
-    return this.usersService.create(createProfileDto)
+  create(
+    @Body() createProfileDto: CreateUserDto,
+  ): Promise<Omit<User, 'password'>> {
+    return this.usersService.create(createProfileDto);
   }
 
   @Get()
@@ -65,7 +88,7 @@ export class UsersController {
     description: 'No user found',
   })
   async findAll() {
-    return this.usersService.findAll()
+    return this.usersService.findAll();
   }
 
   @Get(':id')
@@ -99,7 +122,7 @@ export class UsersController {
     description: 'Invalid user ID',
   })
   findOne(@Param('id') id: string): Promise<User> {
-    return this.usersService.findById(id)
+    return this.usersService.findById(id);
   }
 
   @Put(':id')
@@ -139,8 +162,11 @@ export class UsersController {
     status: 409,
     description: 'Email already in use',
   })
-  update(@Param('id') id: string, @Body() updateProfileDto: UpdateUserDto): Promise<Omit<User, 'password'>> {
-    return this.usersService.update(id, updateProfileDto)
+  update(
+    @Param('id') id: string,
+    @Body() updateProfileDto: UpdateUserDto,
+  ): Promise<Omit<User, 'password'>> {
+    return this.usersService.update(id, updateProfileDto);
   }
 
   @Delete(':id')
@@ -167,6 +193,6 @@ export class UsersController {
     description: 'User not found',
   })
   remove(@Param('id') id: string): Promise<void> {
-    return this.usersService.delete(id)
+    return this.usersService.delete(id);
   }
 }

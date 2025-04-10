@@ -1,10 +1,10 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import mongoose, { HydratedDocument } from 'mongoose'
-import { Content } from '../../contents/schemas/content.schema'
-import { User } from '../../users/schemas/user.schema'
-import { ApiProperty, ApiTags } from '@nestjs/swagger'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { Content } from '../../contents/schemas/content.schema';
+import { User } from '../../users/schemas/user.schema';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
-export type CommentDocument = HydratedDocument<Comment>
+export type CommentDocument = HydratedDocument<Comment>;
 
 @ApiTags('Comments')
 @Schema({
@@ -19,12 +19,13 @@ export type CommentDocument = HydratedDocument<Comment>
 export class Comment {
   @ApiProperty({
     type: String,
-    example: 'I did not understand the content. Can someone break it down for me, please?',
+    example:
+      'I did not understand the content. Can someone break it down for me, please?',
     description: 'The text of the comment',
     required: true,
   })
   @Prop()
-  text: string
+  text: string;
 
   @ApiProperty({
     type: String,
@@ -33,7 +34,7 @@ export class Comment {
     required: true,
   })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  user_id: User
+  user_id: User;
 
   @ApiProperty({
     type: String,
@@ -42,7 +43,7 @@ export class Comment {
     required: true,
   })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Content' })
-  content_id: Content
+  content_id: Content;
 
   @ApiProperty({
     type: String,
@@ -51,7 +52,7 @@ export class Comment {
     required: false,
   })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' })
-  comment_id: Comment
+  comment_id: Comment;
 
   @ApiProperty({
     type: [String],
@@ -60,7 +61,7 @@ export class Comment {
     required: false,
   })
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }])
-  references: Comment[]
+  references: Comment[];
 }
 
-export const CommentSchema = SchemaFactory.createForClass(Comment)
+export const CommentSchema = SchemaFactory.createForClass(Comment);

@@ -1,10 +1,10 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import mongoose, { HydratedDocument } from 'mongoose'
-import { Comment } from '../../comments/schemas/comment.schema'
-import { Unit } from '../../units/schemas/unit.schema'
-import { ApiProperty, ApiTags } from '@nestjs/swagger'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { Comment } from '../../comments/schemas/comment.schema';
+import { Unit } from '../../units/schemas/unit.schema';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
-export type ContentDocument = HydratedDocument<Content>
+export type ContentDocument = HydratedDocument<Content>;
 
 @ApiTags('Contents')
 @Schema({
@@ -24,7 +24,7 @@ export class Content {
     required: true,
   })
   @Prop()
-  title: string
+  title: string;
 
   @ApiProperty({
     type: String,
@@ -33,7 +33,7 @@ export class Content {
     required: false,
   })
   @Prop()
-  file: string
+  file: string;
 
   @ApiProperty({
     type: String,
@@ -42,7 +42,7 @@ export class Content {
     required: true,
   })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Unit' })
-  unit_id: Unit
+  unit_id: Unit;
 
   @ApiProperty({
     type: [String],
@@ -51,7 +51,7 @@ export class Content {
     required: false,
   })
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }])
-  comments: Comment[]
+  comments: Comment[];
 }
 
-export const ContentSchema = SchemaFactory.createForClass(Content)
+export const ContentSchema = SchemaFactory.createForClass(Content);

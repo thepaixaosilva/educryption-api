@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsString, IsMongoId, IsOptional } from 'class-validator'
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, IsMongoId, IsOptional } from 'class-validator';
 
 export class CreateContentDto {
   @ApiProperty({
@@ -8,7 +8,7 @@ export class CreateContentDto {
   })
   @IsString()
   @IsNotEmpty()
-  title: string
+  title: string;
 
   @ApiProperty({
     description: 'File URI that corresponds to the file path for the content',
@@ -16,7 +16,7 @@ export class CreateContentDto {
   })
   @IsString()
   @IsOptional()
-  file?: string
+  file?: string;
 
   @ApiProperty({
     description: 'ID of correspondent unit',
@@ -24,5 +24,5 @@ export class CreateContentDto {
   })
   @IsMongoId()
   @IsNotEmpty()
-  unit_id: string
+  unit_id: string;
 }

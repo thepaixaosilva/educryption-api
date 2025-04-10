@@ -1,13 +1,13 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import mongoose, { HydratedDocument } from 'mongoose'
-import { RoleSchema } from '../../roles/entities/role.entity'
-import { StatusSchema } from '../../statuses/entities/status.entity'
-import { ApiProperty, ApiTags } from '@nestjs/swagger'
-import { Unit } from '../../units/schemas/unit.schema'
-import { Activity } from '../../activities/schemas/activity.schema'
-import { Comment } from '../../comments/schemas/comment.schema'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { RoleSchema } from '../../roles/entities/role.entity';
+import { StatusSchema } from '../../statuses/entities/status.entity';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { Unit } from '../../units/schemas/unit.schema';
+import { Activity } from '../../activities/schemas/activity.schema';
+import { Comment } from '../../comments/schemas/comment.schema';
 
-export type UserDocument = HydratedDocument<User>
+export type UserDocument = HydratedDocument<User>;
 
 @ApiTags('UserActivities')
 @Schema()
@@ -19,7 +19,7 @@ export class UserActivity {
     required: true,
   })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Activity' })
-  activity_id: Activity
+  activity_id: Activity;
 
   @ApiProperty({
     type: String,
@@ -28,7 +28,7 @@ export class UserActivity {
     required: true,
   })
   @Prop()
-  status: string
+  status: string;
 }
 
 @ApiTags('UserUnits')
@@ -41,7 +41,7 @@ export class UserUnit {
     required: true,
   })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Unit' })
-  unit: Unit
+  unit: Unit;
 
   @ApiProperty({
     type: String,
@@ -50,7 +50,7 @@ export class UserUnit {
     required: true,
   })
   @Prop()
-  status: string
+  status: string;
 }
 
 @ApiTags('Users')
@@ -67,7 +67,7 @@ export class User {
   @ApiProperty({
     type: String,
   })
-  id: string
+  id: string;
 
   @ApiProperty({
     type: String,
@@ -80,7 +80,7 @@ export class User {
     type: String,
     unique: true,
   })
-  email: string
+  email: string;
 
   @ApiProperty({
     type: String,
@@ -90,7 +90,7 @@ export class User {
   @Prop({
     type: String,
   })
-  password: string
+  password: string;
 
   @ApiProperty({
     type: String,
@@ -101,17 +101,17 @@ export class User {
   @Prop({
     type: String,
   })
-  fullName: string
+  fullName: string;
 
   @Prop({
     type: RoleSchema,
   })
-  role: RoleSchema
+  role: RoleSchema;
 
   @Prop({
     type: StatusSchema,
   })
-  status: StatusSchema
+  status: StatusSchema;
 
   @ApiProperty({
     type: [UserActivity],
@@ -129,7 +129,7 @@ export class User {
     required: false,
   })
   @Prop([UserActivity])
-  activities: UserActivity[]
+  activities: UserActivity[];
 
   @ApiProperty({
     type: [UserUnit],
@@ -147,7 +147,7 @@ export class User {
     required: false,
   })
   @Prop([UserUnit])
-  units: UserUnit[]
+  units: UserUnit[];
 
   @ApiProperty({
     type: [String],
@@ -156,9 +156,9 @@ export class User {
     required: false,
   })
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }])
-  comments: Comment[]
+  comments: Comment[];
 }
 
-export const UserSchema = SchemaFactory.createForClass(User)
+export const UserSchema = SchemaFactory.createForClass(User);
 
-UserSchema.index({ 'role._id': 1 })
+UserSchema.index({ 'role._id': 1 });

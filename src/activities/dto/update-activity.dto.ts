@@ -1,7 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types'
-import { IsOptional, IsString } from 'class-validator'
-import { CreateActivityDto } from './create-activity.dto'
-import { ApiPropertyOptional } from '@nestjs/swagger'
+import { PartialType } from '@nestjs/mapped-types';
+import { IsOptional, IsString } from 'class-validator';
+import { CreateActivityDto } from './create-activity.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateActivityDto extends PartialType(CreateActivityDto) {
   @ApiPropertyOptional({
@@ -10,5 +10,5 @@ export class UpdateActivityDto extends PartialType(CreateActivityDto) {
   })
   @IsString()
   @IsOptional()
-  title?: string
+  title?: string;
 }

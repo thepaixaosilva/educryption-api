@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateActivityDto {
   @ApiProperty({
@@ -8,7 +8,7 @@ export class CreateActivityDto {
   })
   @IsString()
   @IsNotEmpty()
-  title: string
+  title: string;
 
   @ApiPropertyOptional({
     description: 'ID of the correspondent unit',
@@ -16,5 +16,5 @@ export class CreateActivityDto {
   })
   @IsMongoId()
   @IsOptional()
-  unit_id?: string
+  unit_id?: string;
 }

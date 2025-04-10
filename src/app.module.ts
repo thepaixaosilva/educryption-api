@@ -1,19 +1,19 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
-import { MongooseModule } from '@nestjs/mongoose'
-import { UsersModule } from './users/users.module'
-import { MongooseConfigService } from './database/mongoose-config.service'
-import { ConfigModule } from '@nestjs/config'
-import databaseConfig from './database/config/database.config'
-import { LoggerMiddleware } from './utils/middlewares/logger.middleware'
-import { AuthModule } from './auth/auth.module'
-import { UnitsModule } from './units/units.module'
-import { ActivitiesModule } from './activities/activities.module'
-import { ContentsModule } from './contents/contents.module'
-import { CommentsModule } from './comments/comments.module'
-import appConfig from './config/app.config'
-import authConfig from './auth/config/auth.config'
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { UsersModule } from './users/users.module';
+import { MongooseConfigService } from './database/mongoose-config.service';
+import { ConfigModule } from '@nestjs/config';
+import databaseConfig from './database/config/database.config';
+import { LoggerMiddleware } from './utils/middlewares/logger.middleware';
+import { AuthModule } from './auth/auth.module';
+import { UnitsModule } from './units/units.module';
+import { ActivitiesModule } from './activities/activities.module';
+import { ContentsModule } from './contents/contents.module';
+import { CommentsModule } from './comments/comments.module';
+import appConfig from './config/app.config';
+import authConfig from './auth/config/auth.config';
 
 @Module({
   imports: [
@@ -35,6 +35,8 @@ import authConfig from './auth/config/auth.config'
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL })
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
