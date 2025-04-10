@@ -1,6 +1,7 @@
 services:
   mongodb:
     image: mongo:latest
+    container_name: mongodb
     env_file:
       - .env
     ports:
@@ -12,6 +13,7 @@ services:
 
   api:
     build: .
+    container_name: educryption
     ports:
       - ${APP_PORT}:${APP_PORT}
     command: sh -c "./wait-for-it.sh mongodb:${DATABASE_PORT} -- npm run seed:prod && npm run start:prod"
