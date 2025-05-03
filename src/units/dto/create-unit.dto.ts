@@ -1,12 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsString, IsArray, IsMongoId, IsOptional } from 'class-validator';
 
 export class CreateUnitDto {
   @ApiProperty({
-    description: 'The title of the unit.',
-    example: 'DES Encryption',
+    description: 'Title of the unit',
+    example: 'DES: Data Encryption Standard',
   })
   @IsString()
-  @IsNotEmpty()
   title: string;
+
+  @ApiProperty({ description: 'Key to unlock the unit' })
+  @IsString()
+  unlock_key: string;
+
+  @ApiProperty({
+    description: 'Array of content ObjectIds associated with the unit',
+    required: false,
+    type: [String],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsMongoId({ each: true })
+  contents?: string[];
 }

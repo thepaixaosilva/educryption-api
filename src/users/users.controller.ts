@@ -30,12 +30,12 @@ import { User } from './schemas/user.schema';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.admin)
+@Roles(RoleEnum.ADMIN)
 @UseGuards(JwtAuthGuard)
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post()
   @ApiCreatedResponse({
@@ -194,5 +194,158 @@ export class UsersController {
   })
   remove(@Param('id') id: string): Promise<void> {
     return this.usersService.delete(id);
+  }
+
+
+  @Post(':userId/units/:unitId/unlock')
+  @ApiOperation({
+    summary: 'Unlock a unit for a user',
+    description: 'Unlocks a specific unit for the user.',
+  })
+  @ApiParam({
+    name: 'userId',
+    description: 'User ID',
+    type: String,
+  })
+  @ApiParam({
+    name: 'unitId',
+    description: 'Unit ID',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Unit unlocked successfully.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid data or unit already unlocked.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User or unit not found.',
+  })
+  unlockUnit(
+    @Param('userId') userId: string,
+    @Param('unitId') unitId: string,
+  ): Promise<void> {
+    return this.usersService.unlockUnit(userId, unitId);
+  }
+
+  @Post(':userId/units/:unitId/complete')
+  @ApiOperation({
+    summary: 'Complete a unit for a user',
+    description: 'Marks a unit as completed for the user.',
+  })
+  @ApiParam({
+    name: 'userId',
+    description: 'User ID',
+    type: String,
+  })
+  @ApiParam({
+    name: 'unitId',
+    description: 'Unit ID',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Unit marked as completed successfully.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid data or unit not unlocked.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User or unit not found.',
+  })
+  completeUnit(
+    @Param('userId') userId: string,
+    @Param('unitId') unitId: string,
+  ): Promise<void> {
+    return this.usersService.completeUnit(userId, unitId);
+  }
+
+  @Post(':userId/units/:unitId/contents/:contentId/mark-read')
+  @ApiOperation({
+    summary: 'Mark content as read for a user',
+    description: 'Marks a specific content as read for the user.',
+  })
+  @ApiParam({
+    name: 'userId',
+    description: 'User ID',
+    type: String,
+  })
+  @ApiParam({
+    name: 'unitId',
+    description: 'Unit ID',
+    type: String,
+  })
+  @ApiParam({
+    name: 'contentId',
+    description: 'Content ID',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Content marked as read successfully.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid data or unit not unlocked.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User, unit, or content not found.',
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'Content does not belong to the specified unit.',
+  })
+  markContentAsRead(
+    @Param('userId') userId: string,
+    @Param('unitId') unitId: string,
+    @Param('contentId') contentId: string,
+  ): Promise<void> {
+    return this.usersService.markContentAsRead(userId, unitId, contentId);
+  }
+
+  @Post(':userId/units/:unitId/activities/:activityId/complete')
+  @ApiOperation({
+    summary: 'Complete activity for a user',
+    description: 'Marks an activity as completed for a user.',
+  })
+  @ApiParam({
+    name: 'userId',
+    description: 'User ID',
+    type: String,
+  })
+  @ApiParam({
+    name: 'unitId',
+    description: 'Unit ID',
+    type: String,
+  })
+  @ApiParam({
+    name: 'activityId',
+    description: 'Activity ID',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Activity marked as completed successfully.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid data or unit not unlocked.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User, unit, or activity not found.',
+  })
+  completeActivity(
+    @Param('userId') userId: string,
+    @Param('unitId') unitId: string,
+    @Param('activityId') activityId: string,
+  ): Promise<void> {
+    return this.usersService.completeActivity(userId, unitId, activityId);
   }
 }

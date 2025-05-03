@@ -7,6 +7,8 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Patch,
+  Delete,
 } from '@nestjs/common';
 import { UnitsService } from './units.service';
 import { CreateUnitDto } from './dto/create-unit.dto';
@@ -22,6 +24,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UpdateUnitDto } from './dto/update-unit.dto';
+import { NullableType } from 'src/utils/types/nullable-type';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -106,75 +110,68 @@ export class UnitsController {
     return this.unitsService.findById(id);
   }
 
-  @Post(':id/activities/:activityId')
-  @ApiCreatedResponse({
+  @Patch(':id')
+  @ApiOkResponse({
     type: Unit,
   })
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Add an activity to the unit',
-    description:
-      'Adds an activity to the unit by associating the activity ID to the unit.',
+    summary: 'Update unit by ID',
+    description: 'Updates a specific unit by its ID with the provided data.',
   })
   @ApiParam({
     name: 'id',
-    type: String,
     description: 'Unit ID',
-  })
-  @ApiParam({
-    name: 'activityId',
     type: String,
-    description: 'Activity ID',
   })
   @ApiResponse({
     status: 200,
-    description: 'Activity added to the unit successfully',
+    description: 'Unit updated successfully',
     type: Unit,
   })
   @ApiResponse({
-    status: 422,
-    description: 'Data failed validation',
+    status: 404,
+    description: 'Unit not found',
   })
-  addActivity(
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid unit ID',
+  })
+  @ApiBody({
+    type: CreateUnitDto,
+    description: 'Updated unit data',
+  })
+  update(
     @Param('id') id: string,
-    @Param('activityId') activityId: string,
-  ): Promise<Unit> {
-    return this.unitsService.addActivity(id, activityId);
+    @Body() updateUnitDto: UpdateUnitDto,
+  ): Promise<NullableType<Unit>> {
+    return this.unitsService.update(id, updateUnitDto);
   }
 
-  @Post(':id/contents/:contentId')
-  @ApiCreatedResponse({
-    type: Unit,
-  })
-  @HttpCode(HttpStatus.CREATED)
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
-    summary: 'Add content to the unit',
-    description:
-      'Adds a content to the unit by associating the content ID to the unit.',
+    summary: 'Delete unit by ID',
+    description: 'Deletes a specific unit by its ID.',
   })
   @ApiParam({
     name: 'id',
-    type: String,
     description: 'Unit ID',
-  })
-  @ApiParam({
-    name: 'contentId',
     type: String,
-    description: 'Content ID',
   })
   @ApiResponse({
-    status: 200,
-    description: 'Content added to the unit successfully',
-    type: Unit,
+    status: 204,
+    description: 'Unit deleted successfully',
   })
   @ApiResponse({
-    status: 422,
-    description: 'Data failed validation',
+    status: 404,
+    description: 'Unit not found',
   })
-  addContent(
-    @Param('id') id: string,
-    @Param('contentId') contentId: string,
-  ): Promise<Unit> {
-    return this.unitsService.addContent(id, contentId);
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid unit ID',
+  })
+  remove(@Param('id') id: string): Promise<NullableType<Unit>> {
+    return this.unitsService.remove(id);
   }
 }

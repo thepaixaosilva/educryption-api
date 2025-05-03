@@ -1,27 +1,47 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsMongoId, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsInt,
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class CreateContentDto {
   @ApiProperty({
-    description: 'The title of the content',
-    example: 'First Phase: Permutation',
+    description: 'Title of the content',
+    example: 'First Function: Expansion',
   })
   @IsString()
   @IsNotEmpty()
   title: string;
 
   @ApiProperty({
-    description: 'File URI that corresponds to the file path for the content',
-    example: 'file:///C:/Users/username/Documents/content-file.pdf',
+    description: 'Description of the content',
+    example:
+      'This activity is about the expansion of the data to be encrypted.',
   })
   @IsString()
-  @IsOptional()
-  file?: string;
+  @IsNotEmpty()
+  description: string;
 
   @ApiProperty({
-    description: 'ID of correspondent unit',
-    example: '60d21b4667d0d8992e610c85',
+    description: 'Display sequence position of the content',
+    example: 1,
   })
+  @IsInt()
+  sequence: number;
+
+  @ApiProperty({
+    description: 'Type of the content',
+    example: 'practice',
+    enum: ['practice', 'text'],
+  })
+  @IsEnum(['practice', 'text'])
+  @IsNotEmpty()
+  type: 'practice' | 'text';
+
+  @ApiProperty({ description: 'Reference to the unit this content belongs to' })
   @IsMongoId()
   @IsNotEmpty()
   unit_id: string;

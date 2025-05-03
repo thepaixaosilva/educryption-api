@@ -1,57 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
-import { RoleSchema } from '../../roles/entities/role.entity';
-import { StatusSchema } from '../../statuses/entities/status.entity';
+import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
-import { Unit } from '../../units/schemas/unit.schema';
-import { Activity } from '../../activities/schemas/activity.schema';
-import { Comment } from '../../comments/schemas/comment.schema';
+import { RoleEnum } from 'src/roles/roles.enum';
 
 export type UserDocument = HydratedDocument<User>;
-
-@ApiTags('UserActivities')
-@Schema()
-export class UserActivity {
-  @ApiProperty({
-    type: String,
-    example: '60d21b4667d0d8992e610c85',
-    description: 'ID of the activity done by the user',
-    required: true,
-  })
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Activity' })
-  activity_id: Activity;
-
-  @ApiProperty({
-    type: String,
-    example: 'completed',
-    description: 'The status of the activity',
-    required: true,
-  })
-  @Prop()
-  status: string;
-}
-
-@ApiTags('UserUnits')
-@Schema()
-export class UserUnit {
-  @ApiProperty({
-    type: String,
-    example: '60d21b4667d0d8992e610c85',
-    description: 'ID of the unit done by the user',
-    required: true,
-  })
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Unit' })
-  unit: Unit;
-
-  @ApiProperty({
-    type: String,
-    example: 'completed',
-    description: 'The status of the unit',
-    required: true,
-  })
-  @Prop()
-  status: string;
-}
 
 @ApiTags('Users')
 @Schema({
@@ -71,94 +23,101 @@ export class User {
 
   @ApiProperty({
     type: String,
-    example: 'user@domain.com',
-    description: 'User e-mail',
+    example: 'user@example.com',
+    description: 'Unique email address of the user',
     uniqueItems: true,
     required: true,
   })
   @Prop({
     type: String,
+    required: true,
     unique: true,
   })
   email: string;
 
   @ApiProperty({
     type: String,
-    description: 'Encrypted user password',
+    description: 'Hashed password of the user',
     required: true,
   })
-  @Prop({
-    type: String,
-  })
+  @Prop({ required: true })
   password: string;
 
   @ApiProperty({
     type: String,
+    example: 'john_doe',
+    description: 'Username (3–30 chars, letters/numbers/underscores/hyphens)',
+    required: true,
+    uniqueItems: true,
+  })
+  @Prop({ required: true, unique: true, match: /^[a-zA-Z0-9_-]{3,30}$/ })
+  username: string;
+
+  @ApiProperty({
+    type: String,
     example: 'John Doe',
-    description: "User's full name",
+    description: 'Full name (optional, 3–100 chars, letters and spaces)',
+    required: false,
+  })
+  @Prop({
+    required: false,
+    match: /^(?=.{3,100}$)[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ' -]*[A-Za-zÀ-ÿ]$/,
+  })
+  full_name?: string;
+
+  @ApiProperty({
+    type: String,
+    example: 'user',
+    description:
+      "The user's role must be provided and has to be one of the following: 'admin', 'user'",
+    enum: RoleEnum,
     required: true,
   })
-  @Prop({
+  @Prop({ required: true, enum: RoleEnum, default: 'user' })
+  role: string;
+
+  @ApiProperty({
     type: String,
+    example: 'active',
+    description:
+      "The user's status must be provided and has to be one of the following: 'active', 'inactive'",
+    enum: ['active', 'inactive'],
+    required: true,
   })
-  fullName: string;
-
-  @Prop({
-    type: RoleSchema,
-  })
-  role: RoleSchema;
-
-  @Prop({
-    type: StatusSchema,
-  })
-  status: StatusSchema;
-
-  @ApiProperty({
-    type: [UserActivity],
-    example: [
-      {
-        unit: '60d21b4667d0d8992e610c85',
-        status: 'completed',
-      },
-      {
-        unit: '60d21b4667d0d8992e610c86',
-        status: 'in-progress',
-      },
-    ],
-    description: 'Array containing the activities done by the user',
-    required: false,
-  })
-  @Prop([UserActivity])
-  activities: UserActivity[];
-
-  @ApiProperty({
-    type: [UserUnit],
-    example: [
-      {
-        unit: '60d21b4667d0d8992e610c85',
-        status: 'completed',
-      },
-      {
-        unit: '60d21b4667d0d8992e610c86',
-        status: 'in-progress',
-      },
-    ],
-    description: 'Array containing the units done by the user',
-    required: false,
-  })
-  @Prop([UserUnit])
-  units: UserUnit[];
+  @Prop({ required: true, enum: ['active', 'inactive'], default: 'active' })
+  status: string;
 
   @ApiProperty({
     type: [String],
-    example: ['60d21b4667d0d8992e610c85', '60d21b4667d0d8992e610c86'],
-    description: 'Array containing the comments written by the user',
+    description: 'Array of ObjectIds of unlocked units',
     required: false,
   })
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }])
-  comments: Comment[];
+  @Prop({ type: [Types.ObjectId], ref: 'Unit', default: [] })
+  units_unlocked?: Types.ObjectId[];
+
+  @ApiProperty({
+    type: [String],
+    description: 'Array of ObjectIds of completed units',
+    required: false,
+  })
+  @Prop({ type: [Types.ObjectId], ref: 'Unit', default: [] })
+  units_completed?: Types.ObjectId[];
+
+  @ApiProperty({
+    type: [String],
+    description: 'Array of ObjectIds of read contents',
+    required: false,
+  })
+  @Prop({ type: [Types.ObjectId], ref: 'Content', default: [] })
+  contents_read?: Types.ObjectId[];
+
+  @ApiProperty({
+    type: [String],
+    description: 'Array of ObjectIds of completed activities',
+    required: false,
+  })
+  @Prop({ type: [Types.ObjectId], ref: 'Content', default: [] })
+  activities_completed?: Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
-UserSchema.index({ 'role._id': 1 });

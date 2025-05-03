@@ -1,57 +1,57 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
-import { Comment } from '../../comments/schemas/comment.schema';
-import { Unit } from '../../units/schemas/unit.schema';
+import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
 export type ContentDocument = HydratedDocument<Content>;
 
 @ApiTags('Contents')
-@Schema({
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
-  toJSON: {
-    virtuals: true,
-    getters: true,
-  },
-  toObject: { virtuals: true, getters: true },
-  id: true,
-})
+@Schema({ timestamps: true })
 export class Content {
   @ApiProperty({
     type: String,
-    example: 'First Phase: Permutation',
-    description: 'The title of the content',
+    example: 'First Function: Expansion',
+    description: 'Title of the content',
     required: true,
   })
-  @Prop()
+  @Prop({ required: true })
   title: string;
 
   @ApiProperty({
     type: String,
-    example: 'file:///C:/Users/username/Documents/content-file.pdf',
-    description: 'File URI that corresponds to the file path for the content',
-    required: false,
+    example:
+      'This activity is about the expansion of the data to be encrypted.',
+    description: 'Description of the content',
+    required: true,
   })
-  @Prop()
-  file: string;
+  @Prop({ required: true })
+  description: string;
+
+  @ApiProperty({
+    type: Number,
+    example: 1,
+    description: 'Display sequence position of the content',
+    required: true,
+  })
+  @Prop({ required: true })
+  sequence: number;
 
   @ApiProperty({
     type: String,
-    example: '60d21b4667d0d8992e610c85',
-    description: 'ID of the correspondent unit',
+    example: 'practice',
+    enum: ['practice', 'text'],
+    description: 'Type of the content',
     required: true,
   })
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Unit' })
-  unit_id: Unit;
+  @Prop({ required: true, enum: ['practice', 'text'] })
+  type: 'practice' | 'text';
 
   @ApiProperty({
-    type: [String],
-    example: ['60d21b4667d0d8992e610c85', '60d21b4667d0d8992e610c86'],
-    description: 'Array that contain the comments about the content',
-    required: false,
+    type: String,
+    description: 'Reference to the unit this content belongs to',
+    required: true,
   })
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }])
-  comments: Comment[];
+  @Prop({ type: Types.ObjectId, ref: 'Unit', required: true })
+  unit_id: Types.ObjectId;
 }
 
 export const ContentSchema = SchemaFactory.createForClass(Content);

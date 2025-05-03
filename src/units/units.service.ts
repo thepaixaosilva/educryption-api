@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import { Unit, UnitDocument } from './schemas/unit.schema';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { Validators } from 'src/utils/helpers/validators.helper';
+import { UpdateUnitDto } from './dto/update-unit.dto';
+import { NullableType } from 'src/utils/types/nullable-type';
 
 @Injectable()
 export class UnitsService {
@@ -45,23 +47,44 @@ export class UnitsService {
     return this.findUnitById(id);
   }
 
+  async update(
+    id: string,
+    updateUnitDto: UpdateUnitDto,
+  ): Promise<NullableType<Unit>> {
+    Validators.validateId(id, 'Unit');
+    const unit = await this.findUnitById(id);
+    if (!unit) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        errors: {
+          status: 'unitNotFound',
+        },
+      });
+    }
+
+    const updatedUnit = await this.unitModel.findByIdAndUpdate(
+      id,
+      { $set: updateUnitDto },
+      { new: true },
+    );
+
+    return updatedUnit;
+  }
+
+  remove(id: string): Promise<NullableType<Unit>> {
+    Validators.validateId(id, 'Unit');
+    return this.unitModel.findByIdAndDelete(id).exec();
+  }
+
   private async addReferenceToUnit(
     unitId: string,
     referenceId: string,
-    field: string,
   ): Promise<Unit> {
     Validators.validateId(unitId, 'Unit');
-    Validators.validateId(
-      referenceId,
-      field.charAt(0).toUpperCase() + field.slice(1),
-    );
+    Validators.validateId(referenceId, 'Content');
 
     const unit = await this.unitModel
-      .findByIdAndUpdate(
-        unitId,
-        { $push: { [field]: referenceId } },
-        { new: true },
-      )
+      .findByIdAndUpdate(unitId, { new: true })
       .exec();
 
     if (!unit) {
@@ -76,11 +99,7 @@ export class UnitsService {
     return unit;
   }
 
-  async addActivity(unitId: string, activityId: string): Promise<Unit> {
-    return this.addReferenceToUnit(unitId, activityId, 'activities');
-  }
-
-  async addContent(unitId: string, contentId: string): Promise<Unit> {
-    return this.addReferenceToUnit(unitId, contentId, 'contents');
+  async addContent(unitId: string, referenceId: string): Promise<Unit> {
+    return this.addReferenceToUnit(unitId, referenceId);
   }
 }

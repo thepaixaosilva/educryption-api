@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  ForbiddenException,
   HttpStatus,
   Injectable,
   NotFoundException,
@@ -7,22 +9,19 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserActivity } from './schemas/user.schema';
+import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { RoleSchema } from '../roles/entities/role.entity';
-import { RoleEnum } from '../roles/roles.enum';
-import { StatusSchema } from '../statuses/entities/status.entity';
-import { StatusEnum } from '../statuses/statuses.enum';
-import { Activity } from '../activities/schemas/activity.schema';
-import { SubmitActivityDto } from '../activities/dto/submit-activity.dto';
 import { Validators } from 'src/utils/helpers/validators.helper';
+import { Content } from 'src/contents/schemas/content.schema';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private readonly usersModel: Model<User>,
+    @InjectModel('Content')
+    private readonly contentModel: Model<Content>,
   ) {}
 
   private async checkEmailExistence(
@@ -40,38 +39,6 @@ export class UsersService {
     }
   }
 
-  private async checkRoleExistence(roleId: string): Promise<RoleSchema> {
-    const roleExists = Object.values(RoleEnum)
-      .map(String)
-      .includes(String(roleId));
-    if (!roleExists) {
-      throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        errors: {
-          role: 'roleNotExists',
-        },
-      });
-    }
-
-    return { _id: roleId };
-  }
-
-  private async checkStatusExistence(statusId: string): Promise<StatusSchema> {
-    const statusExists = Object.values(StatusEnum)
-      .map(String)
-      .includes(String(statusId));
-    if (!statusExists) {
-      throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        errors: {
-          status: 'statusNotExists',
-        },
-      });
-    }
-
-    return { _id: statusId };
-  }
-
   private async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt();
     return await bcrypt.hash(password, salt);
@@ -84,19 +51,13 @@ export class UsersService {
     const cryptedPassword = createUserDto.password
       ? await this.hashPassword(createUserDto.password)
       : undefined;
-    const role = createUserDto.role?.id
-      ? await this.checkRoleExistence(createUserDto.role.id)
-      : undefined;
-    const status = createUserDto.status?.id
-      ? await this.checkStatusExistence(createUserDto.status.id)
-      : undefined;
 
     const user = await this.usersModel.create({
-      fullName: createUserDto.fullName,
+      fullName: createUserDto.full_name,
       email: createUserDto.email,
       password: cryptedPassword,
-      role,
-      status,
+      role: createUserDto.role,
+      status: createUserDto.status,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -139,26 +100,6 @@ export class UsersService {
     return user;
   }
 
-  async findByIds(ids: string[]): Promise<User[]> {
-    ids.forEach((id) => Validators.validateId(id, 'User'));
-
-    const users = await this.usersModel
-      .find({ _id: { $in: ids } })
-      .select('-password')
-      .lean();
-
-    if (!users || users.length === 0) {
-      throw new NotFoundException({
-        status: HttpStatus.NOT_FOUND,
-        errors: {
-          status: 'userNotFound',
-        },
-      });
-    }
-
-    return users;
-  }
-
   async findByEmail(email: User['email']): Promise<User> {
     const user = await this.usersModel.findOne({ email });
 
@@ -186,21 +127,15 @@ export class UsersService {
     const cryptedPassword = updateUserDto.password
       ? await this.hashPassword(updateUserDto.password)
       : undefined;
-    const role = updateUserDto.role?.id
-      ? await this.checkRoleExistence(updateUserDto.role.id)
-      : undefined;
-    const status = updateUserDto.status?.id
-      ? await this.checkStatusExistence(updateUserDto.status.id)
-      : undefined;
 
     const updatedUser = await this.usersModel.findByIdAndUpdate(
       id,
       {
-        fullName: updateUserDto.fullName,
+        fullName: updateUserDto.full_name,
         email: updateUserDto.email,
         password: cryptedPassword,
-        role,
-        status,
+        role: updateUserDto.role,
+        status: updateUserDto.status,
       },
       { new: true },
     );
@@ -219,32 +154,6 @@ export class UsersService {
     return userWithoutPassword;
   }
 
-  async completeActivity(
-    submitActivityDto: SubmitActivityDto,
-    activity: Activity,
-  ): Promise<User> {
-    const user = await this.usersModel
-      .findById(submitActivityDto.user_id)
-      .exec();
-
-    if (!user) {
-      throw new NotFoundException({
-        status: HttpStatus.NOT_FOUND,
-        errors: {
-          status: 'userNotFound',
-        },
-      });
-    }
-
-    const userActivity: UserActivity = {
-      activity_id: activity,
-      status: 'completed',
-    };
-
-    user.activities.push(userActivity);
-    return user.save();
-  }
-
   async delete(id: string): Promise<void> {
     Validators.validateId(id, 'User');
 
@@ -258,5 +167,99 @@ export class UsersService {
         },
       });
     }
+  }
+
+  private async isUnitUnlocked(
+    userId: string,
+    unitId: string,
+  ): Promise<boolean> {
+    const user = await this.usersModel.findById(userId).lean();
+    return !!user?.units_unlocked?.includes(
+      new this.usersModel.base.Types.ObjectId(unitId),
+    );
+  }
+
+  async unlockUnit(userId: string, unitId: string): Promise<void> {
+    Validators.validateId(userId, 'User');
+    Validators.validateId(unitId, 'Unit');
+
+    const unitAlreadyUnlocked = await this.isUnitUnlocked(userId, unitId);
+    if (unitAlreadyUnlocked) {
+      throw new BadRequestException('Unit already unlocked');
+    }
+
+    await this.usersModel.findByIdAndUpdate(userId, {
+      $addToSet: { units_unlocked: unitId },
+    });
+  }
+
+  async completeUnit(userId: string, unitId: string): Promise<void> {
+    Validators.validateId(userId, 'User');
+    Validators.validateId(unitId, 'Unit');
+
+    const unitUnlocked = await this.isUnitUnlocked(userId, unitId);
+    if (!unitUnlocked) {
+      throw new ForbiddenException('Unit not unlocked');
+    }
+
+    await this.usersModel.findByIdAndUpdate(userId, {
+      $addToSet: { units_completed: unitId },
+    });
+  }
+
+  async markContentAsRead(
+    userId: string,
+    unitId: string,
+    contentId: string,
+  ): Promise<void> {
+    Validators.validateId(userId, 'User');
+    Validators.validateId(unitId, 'Unit');
+    Validators.validateId(contentId, 'Content');
+
+    const unitUnlocked = await this.isUnitUnlocked(userId, unitId);
+    if (!unitUnlocked) {
+      throw new ForbiddenException('Unit not unlocked');
+    }
+
+    const content = await this.contentModel.findById(contentId).lean();
+    if (!content) throw new NotFoundException('Content not found');
+
+    if (String(content.unit_id) !== String(unitId)) {
+      throw new UnprocessableEntityException(
+        'Content does not belong to this unit',
+      );
+    }
+
+    await this.usersModel.findByIdAndUpdate(userId, {
+      $addToSet: { contentsRead: contentId },
+    });
+  }
+
+  async completeActivity(
+    userId: string,
+    unitId: string,
+    activityId: string,
+  ): Promise<void> {
+    Validators.validateId(userId, 'User');
+    Validators.validateId(unitId, 'Unit');
+    Validators.validateId(activityId, 'Activity');
+
+    const unitUnlocked = await this.isUnitUnlocked(userId, unitId);
+    if (!unitUnlocked) {
+      throw new ForbiddenException('Unit not unlocked');
+    }
+
+    const content = await this.contentModel.findById(activityId).lean();
+    if (!content) throw new NotFoundException('Content not found');
+
+    if (String(content.unit_id) !== String(unitId)) {
+      throw new UnprocessableEntityException(
+        'Content does not belong to this unit',
+      );
+    }
+
+    await this.usersModel.findByIdAndUpdate(userId, {
+      $addToSet: { activities_completed: activityId },
+    });
   }
 }

@@ -6,7 +6,6 @@ import {
   Delete,
   Body,
   Param,
-  UploadedFile,
   UseInterceptors,
   Query,
   HttpCode,
@@ -71,13 +70,7 @@ export class ContentsController {
     status: 422,
     description: 'Data failed validation',
   })
-  async create(
-    @Body() createContentDto: CreateContentDto,
-    @UploadedFile() file,
-  ): Promise<Content> {
-    if (file) {
-      createContentDto.file = `uploads/contents/${file.filename}`;
-    }
+  async create(@Body() createContentDto: CreateContentDto): Promise<Content> {
     return this.contentsService.create(createContentDto);
   }
 
@@ -184,11 +177,7 @@ export class ContentsController {
   async update(
     @Param('id') id: string,
     @Body() updateContentDto: UpdateContentDto,
-    @UploadedFile() file,
   ): Promise<Content> {
-    if (file) {
-      updateContentDto.file = `uploads/contents/${file.filename}`;
-    }
     return this.contentsService.update(id, updateContentDto);
   }
 
@@ -217,36 +206,5 @@ export class ContentsController {
   })
   remove(@Param('id') id: string): Promise<void> {
     return this.contentsService.remove(id);
-  }
-
-  @Post(':id/comments/:commentId')
-  @ApiOperation({
-    summary: 'Add comment to content',
-    description: 'Adds a comment to a specific content.',
-  })
-  @ApiParam({
-    name: 'id',
-    type: String,
-    description: 'Content ID to add comment to',
-  })
-  @ApiParam({
-    name: 'commentId',
-    type: String,
-    description: 'Comment ID to be added',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Comment added successfully',
-    type: Content,
-  })
-  @ApiResponse({
-    status: 422,
-    description: 'Data failed validation',
-  })
-  addComment(
-    @Param('id') id: string,
-    @Param('commentId') commentId: string,
-  ): Promise<Content> {
-    return this.contentsService.addComment(id, commentId);
   }
 }

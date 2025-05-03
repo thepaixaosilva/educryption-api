@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { RoleEnum } from '../../../roles/roles.enum';
-import { StatusEnum } from '../../../statuses/statuses.enum';
 import { User } from '../../../users/schemas/user.schema';
 
 @Injectable()
@@ -27,11 +26,9 @@ export class UserSeedService {
         password: password,
         fullName: 'Admin',
         role: {
-          _id: RoleEnum.admin.toString(),
+          _id: RoleEnum.ADMIN.toString(),
         },
-        status: {
-          _id: StatusEnum.active.toString(),
-        },
+        status: 'active',
       });
       await data.save();
     }
@@ -49,11 +46,9 @@ export class UserSeedService {
         password: password,
         fullName: 'User',
         role: {
-          _id: RoleEnum.user.toString(),
+          _id: RoleEnum.USER.toString(),
         },
-        status: {
-          _id: StatusEnum.active.toString(),
-        },
+        status: 'active',
       });
 
       await data.save();

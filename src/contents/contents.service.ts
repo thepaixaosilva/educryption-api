@@ -10,7 +10,8 @@ import { Validators } from 'src/utils/helpers/validators.helper';
 @Injectable()
 export class ContentsService {
   constructor(
-    @InjectModel(Content.name) private contentModel: Model<ContentDocument>,
+    @InjectModel(Content.name)
+    private contentModel: Model<ContentDocument>,
     private unitsService: UnitsService,
   ) {}
 
@@ -114,28 +115,5 @@ export class ContentsService {
         },
       });
     }
-  }
-
-  async addComment(contentId: string, commentId: string): Promise<Content> {
-    Validators.validateId(contentId, 'Content');
-    Validators.validateId(commentId, 'Comment');
-    const content = await this.contentModel
-      .findByIdAndUpdate(
-        contentId,
-        { $push: { comments: commentId } },
-        { new: true },
-      )
-      .exec();
-
-    if (!content) {
-      throw new NotFoundException({
-        status: HttpStatus.NOT_FOUND,
-        errors: {
-          status: 'contentNotFound',
-        },
-      });
-    }
-
-    return content;
   }
 }
