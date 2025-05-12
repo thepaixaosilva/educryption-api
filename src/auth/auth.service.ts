@@ -15,6 +15,7 @@ import { AuthLoginDto } from './dto/auth-login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { NullableType } from '../utils/types/nullable-type';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class AuthService {
@@ -82,14 +83,18 @@ export class AuthService {
   }): Promise<Omit<LoginResponseDto, 'user'>> {
     const user = await this.usersService.findById(payload.id);
 
-    if (!user?.role) throw new UnauthorizedException();
+    if (!user?.role) {
+      throw new UnauthorizedException();
+    }
+
+    const userId = new Types.ObjectId(payload.id);
 
     const {
       token,
       refreshToken: newRefreshToken,
       tokenExpires,
     } = await this.getTokensData({
-      id: user.id,
+      id: userId.toString(),
       role: user.role,
     });
 
@@ -100,7 +105,7 @@ export class AuthService {
     };
   }
 
-  private async getTokensData(data: { id: User['id']; role: User['role'] }) {
+  private async getTokensData(data: { id: string; role: User['role'] }) {
     const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
       infer: true,
     });
@@ -121,6 +126,7 @@ export class AuthService {
       this.jwtService.signAsync(
         {
           id: data.id,
+          role: data.role,
         },
         {
           secret: this.configService.getOrThrow('auth.refreshSecret', {
