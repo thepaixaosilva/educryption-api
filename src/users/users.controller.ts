@@ -35,7 +35,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   @ApiCreatedResponse({
@@ -195,7 +195,6 @@ export class UsersController {
   remove(@Param('id') id: string): Promise<void> {
     return this.usersService.delete(id);
   }
-
 
   @Post(':userId/units/:unitId/unlock')
   @ApiOperation({

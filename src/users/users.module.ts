@@ -10,9 +10,9 @@ import { ContentsModule } from 'src/contents/contents.module';
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
-      { name: Content.name, schema: ContentSchema }
+      { name: Content.name, schema: ContentSchema },
     ]),
-    ContentsModule
+    ContentsModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
